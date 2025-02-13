@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{% block title %}Purple Admin{% endblock %}</title>
+
+    <!-- Plugins: CSS -->
+    <link rel="stylesheet" href="{{ asset('assets-back/vendors/mdi/css/materialdesignicons.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets-back/vendors/ti-icons/css/themify-icons.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets-back/vendors/css/vendor.bundle.base.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets-back/vendors/font-awesome/css/font-awesome.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets-back/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css') }}">
+
+    <!-- Layout Styles -->
+    <link rel="stylesheet" href="{{ asset('assets-back/css/style.css') }}">
+    <link rel="shortcut icon" href="{{ asset('assets-back/images/favicon.png') }}" />
+
+    {% block stylesheets %}{% endblock %}
+  </head>
+  
+  <body>
+    <div class="container-scroller">
+      <!-- Navbar -->
+      <nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+        <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start">
+          <a class="navbar-brand brand-logo"">
+            <img src="{{ asset('assets-back/images/logo.svg') }}" alt="logo" />
+          </a>
+          <a class="navbar-brand brand-logo-mini"">
+            <img src="{{ asset('assets-back/images/logo-mini.svg') }}" alt="logo" />
+          </a>
+        </div>
+        <div class="navbar-menu-wrapper d-flex align-items-stretch">
+          <ul class="navbar-nav navbar-nav-right">
+            <li class="nav-item nav-profile dropdown">
+              <a class="nav-link dropdown-toggle" id="profileDropdown" href="#" data-bs-toggle="dropdown">
+                <div class="nav-profile-img">
+                  <img src="{{ asset('assets-back/images/faces/face1.jpg') }}" alt="image">
+                  <span class="availability-status online"></span>
+                </div>
+                <div class="nav-profile-text">
+                  <p class="mb-1 text-black">User Name</p>
+                </div>
+              </a>
+              <div class="dropdown-menu navbar-dropdown">
+                <a class="dropdown-item" href="#">
+                  <i class="mdi mdi-logout me-2 text-primary"></i> Signout
+                </a>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <div class="container-fluid page-body-wrapper">
+        <!-- Sidebar -->
+        <nav class="sidebar sidebar-offcanvas" id="sidebar">
+          <ul class="nav">
+            <li class="nav-item nav-profile">
+              <a href="#" class="nav-link">
+                <div class="nav-profile-image">
+                  <img src="{{ asset('assets-back/images/faces/face1.jpg') }}" alt="profile" />
+                </div>
+                <div class="nav-profile-text d-flex flex-column">
+                  <span class="font-weight-bold mb-2">User Name</span>
+                </div>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ path('app_quiz_index') }}">
+                    <span class="menu-title">Quizzes</span>
+                    <i class="mdi mdi-view-list menu-icon"></i>
+                </a>
+
+                <a class="nav-link" href="{{ path('app_question_index') }}">
+                    <span class="menu-title">Questions</span>
+                    <i class="mdi mdi-help-circle-outline menu-icon"></i>
+                </a>
+
+                <a class="nav-link" href="{{ path('app_answer_index') }}">
+                    <span class="menu-title">Answers</span>
+                    <i class="mdi mdi-checkbox-marked-outline menu-icon"></i>
+                </a>
+
+            </li>
+          </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="main-panel">
+          <div class="content-wrapper">
+            {% block body %}{% endblock %}
+          </div>
+
+          <!-- Footer -->
+          <footer class="footer">
+            <div class="d-sm-flex justify-content-center justify-content-sm-between">
+              <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">
+                Copyright © 2024 <a href="https://www.bootstrapdash.com/" target="_blank">BootstrapDash</a>.
+              </span>
+              <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">
+                Hand-crafted & made with <i class="mdi mdi-heart text-danger"></i>
+              </span>
+            </div>
+          </footer>
+        </div>
+      </div>
+    </div>
+
+    <!-- Plugins: JS -->
+    <script src="{{ asset('assets-back/vendors/js/vendor.bundle.base.js') }}"></script>
+    <script src="{{ asset('assets-back/vendors/chart.js/chart.umd.js') }}"></script>
+    <script src="{{ asset('assets-back/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js') }}"></script>
+
+    <!-- Custom JS -->
+    <script src="{{ asset('assets-back/js/off-canvas.js') }}"></script>
+    <script src="{{ asset('assets-back/js/misc.js') }}"></script>
+    <script src="{{ asset('assets-back/js/settings.js') }}"></script>
+    <script src="{{ asset('assets-back/js/todolist.js') }}"></script>
+    <script src="{{ asset('assets-back/js/jquery.cookie.js') }}"></script>
+    <script src="{{ asset('assets-back/js/dashboard.js') }}"></script>
+
+    {% block javascripts %}{% endblock %}
+  </body>
+</html>
