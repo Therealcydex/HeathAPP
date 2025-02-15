@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="Medical, Health, Doctor, Directory">
+    <meta name="description" content="Mediplus - Free Medical and Doctor Directory">
+
+    <title>{% block title %}Healthbridge{% endblock %}</title>
+
+    <!-- Favicon -->
+    <link rel="icon" href="{{ asset('images/favicon.png') }}">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700,800,900&display=swap" rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/font-awesome.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/icofont.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/slicknav.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/owl-carousel.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/datepicker.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/responsive.css') }}">
+
+    
+</head>
+<body>
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="loader">
+            <div class="loader-inner"></div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <!-- Topbar -->
+        <div class="topbar">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-md-6 col-sm-6">
+                        <ul class="top-link">
+                            <li><a href="">About</a></li>
+                            <li><a href="">Doctors</a></li>
+                            <li><a href="">Contact</a></li>
+                            <li><a href="">FAQ</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6 col-sm-6 text-end">
+                        <ul class="top-contact">
+                            <li><i class="fa fa-phone"></i> +880 1234 56789</li>
+                            <li><i class="fa fa-envelope"></i> <a href="mailto:support@yourmail.com">support@yourmail.com</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Topbar -->
+
+        <!-- Navigation -->
+        <div class="header-inner">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-3 col-md-3 col-6">
+                        <div class="logo">
+                            <a href=""><img src="{{ asset('images/logo.png') }}" alt="Logo"></a>
+                        </div>
+                    </div>
+                    <div class="col-lg-7 col-md-9 d-none d-lg-block">
+                        <nav class="main-menu">
+                            <ul class="menu">
+                                <li><a href="">Home</a></li>
+                                <li><a href="">Doctors</a></li>
+                                <li><a href="">Services</a></li>
+                                <li><a href="">About</a></li>
+                                <li><a href="">Contact</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                    <div class="col-lg-2 col-6 text-end">
+                        <a href="" class="btn btn-primary">Book Appointment</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- End Header -->
+
+    <!-- Main Content -->
+    <main>
+        {% block body %}
+            {% block content %}
+            {% endblock %}
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 col-md-6">
+                    <p>&copy; 2025 Mediplus. All Rights Reserved.</p>
+                </div>
+                <div class="col-lg-6 col-md-6 text-end">
+                    <ul class="social">
+                        <li><a href="#"><i class="fa fa-facebook"></i></a></li>
+                        <li><a href="#"><i class="fa fa-twitter"></i></a></li>
+                        <li><a href="#"><i class="fa fa-linkedin"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="{{ asset('js/jquery.min.js') }}"></script>
+    <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('js/slicknav.min.js') }}"></script>
+    <script src="{{ asset('js/owl-carousel.min.js') }}"></script>
+    <script src="{{ asset('js/main.js') }}"></script>
+    
+</body>
+</html>

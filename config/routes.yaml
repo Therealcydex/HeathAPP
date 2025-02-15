@@ -1,0 +1,21 @@
+
+app_login:
+    path: /login
+    controller: App\Controller\SecurityController::login
+
+controllers:
+    resource:
+        path: ../src/Controller/
+        namespace: App\Controller
+    type: attribute
+home:
+  path: /
+  controller: App\Controller\HomeController::index
+
+contact:
+  path: /contact
+  controller: App\Controller\HomeController::contact
+
+not_found:
+  path: /404
+  controller: App\Controller\HomeController::notFound

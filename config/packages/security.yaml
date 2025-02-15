@@ -1,0 +1,32 @@
+security:
+    enable_authenticator_manager: true
+
+    providers:
+        in_memory:
+            memory:
+                users:
+                    admin:
+                        password: '$2y$10$xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' # Replace with your hashed password
+                        roles: ['ROLE_ADMIN']
+
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+        main:
+            pattern: ^/
+            lazy: true # Replace anonymous with lazy
+            provider: in_memory
+            form_login:
+                login_path: app_login
+                check_path: app_login
+                default_target_path: /
+            logout:
+                path: app_logout
+                target: app_login
+            # Other configurations for this firewall
+
+    access_control:
+        - { path: ^/admin, roles: ROLE_ADMIN }
+        - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
