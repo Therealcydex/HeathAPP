@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\AnswerRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: AnswerRepository::class)]
 class Answer
@@ -14,12 +15,14 @@ class Answer
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "The text should not be blank.")]
     private ?string $text = null;
 
     #[ORM\Column]
     private ?bool $isCorrect = null;
 
     #[ORM\ManyToOne(inversedBy: 'answers')]
+    #[Assert\NotNull(message: "A question must be associated with the answer.")]
     private ?Question $question = null;
 
     public function getId(): ?int
