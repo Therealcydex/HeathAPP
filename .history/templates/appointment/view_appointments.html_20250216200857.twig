@@ -1,0 +1,43 @@
+{# templates/appointment/view_appointments.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}View Appointments{% endblock %}
+
+{% block body %}
+    <h1>Appointments</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Client Name</th>
+                <th>Doctor Name</th>
+                <th>Appointment Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for appointment in appointments %}
+                <tr>
+                    <td>{{ appointment.clientName }}</td>
+                    <td>{{ appointment.doctorName }}</td>
+                    <td>{{ appointment.appointmentDate ? appointment.appointmentDate|date('Y-m-d') : '' }}</td>
+                    <td>
+                        <a href="{{ path('app_appointment_show', {'id': appointment.id}) }}">Show</a>
+                        <a href="{{ path('app_appointment_edit', {'id': appointment.id}) }}">Edit</a>
+                        <form action="{{ path('app_appointment_delete', {'id': appointment.id}) }}" method="post" onsubmit="return confirm('Are you sure you want to delete this appointment?');">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ appointment.id) }}">
+    <button type="submit">Delete</button>
+</form>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="4">No appointments available.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('book_appointment') }}">Book a New Appointment</a>
+{% endblock %}

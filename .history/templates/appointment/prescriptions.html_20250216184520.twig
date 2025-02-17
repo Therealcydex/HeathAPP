@@ -1,0 +1,26 @@
+{# templates/appointment/prescriptions.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Prescriptions for Appointment #{{ appointment.id }}{% endblock %}
+
+{% block body %}
+    <h1>Prescriptions for Appointment #{{ appointment.id }}</h1>
+
+    <ul>
+        {% for prescription in prescriptions %}
+            <li>
+                {{ prescription.medicalDetails }} - {{ prescription.doctorNotes }}
+
+                <!-- Edit button -->
+                <a href="{{ path('app_prescription_edit', {'id': prescription.id}) }}">Edit</a>
+
+                <!-- Delete button -->
+                <form action="{{ path('app_prescription_delete', {'id': prescription.id}) }}" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+
+{% endblock %}

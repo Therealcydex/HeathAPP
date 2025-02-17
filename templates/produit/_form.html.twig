@@ -1,0 +1,83 @@
+<div class="card-body card-block">
+    {{ form_start(form,{'attr':{'novalidate':'novalidate'}},{'attr':{'class':'form-horizontal'}}) }}
+        <div class="row form-group">
+            <div class="col col-md-3">
+                {{ form_label(form.nom,"Nom :") }}
+            </div>
+            <div class="col-12 col-md-9">
+                {{ form_widget(form.nom,{'attr':{'class':'form-control'}})}}
+                {% if form_errors(form.nom) is not empty %}
+                    <small class="form-text text-muted">{{ form_errors(form.nom) }}</small>
+                {% endif %}
+            </div>
+        </div>
+        <br>
+        <div class="row form-group">
+            <div class="col col-md-3">
+                {{ form_label(form.description,"Description :") }}
+            </div>
+            <div class="col-12 col-md-9">
+                {{ form_widget(form.description,{'attr':{'class':'form-control'}})}}
+                {% if form_errors(form.description) is not empty %}
+                    <small class="form-text text-muted">{{ form_errors(form.description) }}</small>
+                {% endif %}
+            </div>
+        </div>
+        <br>
+        <div class="row form-group">
+            <div class="col col-md-3">
+                {{ form_label(form.type,"Type :") }}
+            </div>
+            <div class="col-12 col-md-9">
+                {{ form_widget(form.type,{'attr':{'class':'form-control'}})}}
+                {% if form_errors(form.type) is not empty %}
+                    <small class="form-text text-muted">{{ form_errors(form.type) }}</small>
+                {% endif %}
+            </div>
+        </div>
+        <br>
+        <div class="row form-group">
+            <div class="col col-md-3">
+                {{ form_label(form.date,"Date :") }}
+            </div>
+            <div class="col-12 col-md-9">
+                {{ form_widget(form.date,{'attr':{'class':'form-control'}})}}
+                {% if form_errors(form.date) is not empty %}
+                    <small class="form-text text-muted">{{ form_errors(form.date) }}</small>
+                {% endif %}
+            </div>
+        </div>
+        <br>
+        <div class="row form-group">
+            <div class="col col-md-3">
+                {{ form_label(form.prix,"Prix :") }}
+            </div>
+            <div class="col-12 col-md-9">
+                {{ form_widget(form.prix,{'attr':{'class':'form-control'}})}}
+                {% if form_errors(form.prix) is not empty %}
+                    <small class="form-text text-muted">{{ form_errors(form.prix) }}</small>
+                {% endif %}
+            </div>
+        </div>
+        <br>
+        <div class="row form-group">
+            <div class="col col-md-3">
+                {{ form_label(form.image,"Image :") }}
+            </div>
+            <div class="col-12 col-md-9">
+                {{ form_widget(form.image,{'attr':{'class':'form-control'}})}}
+                {% if form_errors(form.image) is not empty %}
+                    <small class="form-text text-muted">{{ form_errors(form.image) }}</small>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div align="center" class="card-footer">
+            <button class="btn btn-sm btn-primary"><i class="zmdi zmdi-plus"></i>{{ button_label|default('Ajouter') }}</button>
+            <button class="btn btn-sm btn-outline-secondary"><a style="color:black;" href="{{ path('app_produit_index') }}">Consulter Liste</a></button>
+        </div>
+    {{ form_end(form) }}
+</div>
+
+
+

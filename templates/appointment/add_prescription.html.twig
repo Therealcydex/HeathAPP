@@ -1,0 +1,17 @@
+{# templates/appointment/add_prescription.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Add Prescription{% endblock %}
+
+{% block body %}
+    <h1>Add Prescription for Appointment #{{ appointment.id }}</h1>
+
+    {{ form_start(form) }}
+        {{ form_row(form.medicalDetails) }}
+        {{ form_row(form.doctorNotes) }}
+        {{ form_row(form.save) }}
+    {{ form_end(form) }}
+
+    <a href="{{ path('app_appointment_show', {'id': appointment.id}) }}">Back to Appointment</a>
+{% endblock %}

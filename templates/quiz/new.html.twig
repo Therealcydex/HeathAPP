@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Quiz{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <div class="card-body">
+            <div class="clearfix">
+                <h4 class="card-title float-left">Create New Quiz</h4>
+            </div>
+
+            <div class="chartjs-size-monitor">
+                <div class="chartjs-size-monitor-expand"><div class=""></div></div>
+                <div class="chartjs-size-monitor-shrink"><div class=""></div></div>
+            </div>
+
+            <div class="mt-4">
+                <form method="post" novalidate>
+                    {{ form_row(form._token) }}
+
+                    <!-- Quiz Name Input -->
+                    <div class="mb-3">
+                        {{ form_label(form.name, 'Quiz Name', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.name, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.name) }}
+                    </div>
+
+                    <!-- Quiz Type Dropdown -->
+                    <div class="mb-3">
+                        {{ form_label(form.type, 'Quiz Type', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.type, {'attr': {'class': 'form-select'}}) }}
+                        {{ form_errors(form.type) }}
+                    </div>
+
+                    <!-- Submit & Back Buttons -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{{ path('app_quiz_index') }}" class="btn btn-secondary">
+                            <i class="mdi mdi-arrow-left"></i> Back to List
+                        </a>
+                        <button type="submit" class="btn btn-gradient-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

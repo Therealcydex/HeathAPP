@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Appointment index{% endblock %}
+
+{% block body %}
+    <h1></h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Client Name</th>
+                <th>Doctor Name</th>
+                <th>Appointment Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for appointment in appointments %}
+            <tr>
+                <td>{{ appointment.id }}</td>
+                <td>{{ appointment.clientName }}</td>
+                <td>{{ appointment.doctorName }}</td>
+                <td>{{ appointment.appointmentDate ? appointment.appointmentDate|date('Y-m-d') : '' }}</td>
+                <td>
+                    <a href="{{ path('app_appointment_show', {'id': appointment.id}) }}">Show</a>
+                    <a href="{{ path('app_appointment_edit', {'id': appointment.id}) }}">Edit</a>
+                    <a href="{{ path('app_appointment_prescriptions', {'id': appointment.id}) }}">View Prescriptions</a>
+<a href="{{ path('add_prescription', {'id': appointment.id}) }}">Add Prescription</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">No records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_appointment_new') }}">Create new</a>
+{% endblock %}

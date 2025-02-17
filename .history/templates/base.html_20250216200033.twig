@@ -1,0 +1,18 @@
+{# templates/base.html.twig #}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}My Symfony App{% endblock %}</title>
+</head>
+<body>
+    <nav>
+        <a href="{{ path('book_appointment') }}">Book Appointment</a>
+        <a href="{{ path('view_appointments') }}">View Appointments</a> <!-- View Appointments link -->
+    </nav>
+
+    {% block body %}{% endblock %}
+</body>
+</html>

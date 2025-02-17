@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Admin Dashboard</h1>
+    
+    <h2>Doctors Pending Approval</h2>
+    {% if doctors is empty %}
+        <p>No doctors waiting for approval.</p>
+    {% else %}
+        <table border="1">
+            <tr>
+                <th>Email</th>
+                <th>Identity Card</th>
+                <th>Diploma</th>
+                <th>Actions</th>
+            </tr>
+            {% for doctor in doctors %}
+                <tr>
+                    <td>{{ doctor.email }}</td>
+                    <td>
+                        {% if doctor.identityCard %}
+                            <img src="{{ asset('uploads/' ~ doctor.identityCard) }}" width="100">
+                        {% else %}
+                            No ID Card Uploaded
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if doctor.diploma %}
+                            <img src="{{ asset('uploads/' ~ doctor.diploma) }}" width="100">
+                        {% else %}
+                            No Diploma Uploaded
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ path('approve_doctor', { 'id': doctor.id }) }}" class="btn btn-success">Approve</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends 'base-front.html.twig' %}
+
+{% block title %}Quiz Results{% endblock %}
+
+{% block body %}
+    <div class="container mt-5 mb-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-lg p-5 text-center">
+                    <div class="card-body">
+                        <h2 class="card-title text-primary">
+                            <i class="mdi mdi-trophy"></i> Quiz Completed!
+                        </h2>
+                        <p class="mt-4 lead">You scored <strong>{{ score }}/{{ total }}</strong>.</p>
+                        
+                        <div class="mt-4">
+                            <a href="{{ path('app_front_quiz_index') }}" class="btn btn-lg btn-primary text-white">
+                                <i class="mdi mdi-restart"></i> Take Another Quiz
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .card {
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .container {
+            padding-bottom: 100px; /* Adds space between the card and footer */
+        }
+
+        .btn-lg {
+            padding: 12px 25px;
+            font-size: 1.2rem;
+        }
+    </style>
+{% endblock %}

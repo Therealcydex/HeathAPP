@@ -1,0 +1,14 @@
+{# templates/appointment/prescriptions.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Prescriptions for {{ appointment.id }}{% endblock %}
+
+{% block body %}
+    <h1>Prescriptions for Appointment #{{ appointment.id }}</h1>
+    <ul>
+        {% for prescription in prescriptions %}
+            <li>{{ prescription.medicalDetails }} - {{ prescription.doctorNotes }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

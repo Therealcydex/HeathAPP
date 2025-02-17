@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Appointment{% endblock %}
+
+{% block body %}
+    <h1>Edit Appointment</h1>
+
+    {{ form_start(form) }}
+        {{ form_row(form.clientName) }}
+        {{ form_row(form.doctorName) }}
+        {{ form_row(form.appointmentDate) }}
+        <button class="btn">Save Changes</button>
+    {{ form_end(form) }}
+
+    <a href="{{ path('view_appointments') }}">Back to Appointments</a>
+{% endblock %}

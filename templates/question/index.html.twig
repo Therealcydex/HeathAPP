@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Question Index{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <div class="card-body">
+            <div class="clearfix">
+                <h4 class="card-title float-left">Question List</h4>
+                <a href="{{ path('app_question_new') }}" class="btn btn-gradient-primary float-right"><i class="mdi mdi-plus"></i> Create New Question</a>
+            </div>
+
+            <div class="table-responsive mt-4">
+                <table class="table table-hover w-100" style="table-layout: fixed;">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Question</th>
+                            <th>Quiz</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for question in questions %}
+                            <tr>
+                                <td>{{ question.text }}</td>
+                                <td>
+                                    <span class="badge badge-info">{{ question.quiz.name }}</span> {# Styled Quiz Name #}
+                                </td>
+                                <td>
+                                    <a href="{{ path('app_question_show', {'id': question.id}) }}" class="btn btn-info btn-sm">
+                                        <i class="mdi mdi-eye"></i> Show
+                                    </a>
+                                    <a href="{{ path('app_question_edit', {'id': question.id}) }}" class="btn btn-warning btn-sm">
+                                        <i class="mdi mdi-pencil"></i> Edit
+                                    </a>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="3" class="text-center">No records found</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

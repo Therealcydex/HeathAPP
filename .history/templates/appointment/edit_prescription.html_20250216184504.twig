@@ -1,0 +1,17 @@
+{# templates/appointment/edit_prescription.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Prescription{% endblock %}
+
+{% block body %}
+    <h1>Edit Prescription for Appointment #{{ prescription.appointment.id }}</h1>
+
+    {{ form_start(form) }}
+        {{ form_row(form.medicalDetails) }}
+        {{ form_row(form.doctorNotes) }}
+        <button class="btn btn-primary">Save Changes</button>
+    {{ form_end(form) }}
+
+    <a href="{{ path('app_appointment_prescriptions', {'id': prescription.appointment.id}) }}">Back to Prescriptions</a>
+{% endblock %}

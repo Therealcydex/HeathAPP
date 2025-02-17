@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Answer Details{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <div class="card-body">
+            <div class="clearfix">
+                <h4 class="card-title">Answer Details</h4>
+            </div>
+
+            <table class="table table-bordered mt-3">
+                <tbody>
+                    <tr>
+                        <th>Question</th>
+                        <td>{{ answer.question.text }}</td>
+                    </tr>
+                    <tr>
+                        <th>Answer</th>
+                        <td>{{ answer.text }}</td>
+                    </tr>
+                    <tr>
+                        <th>Is Correct</th>
+                        <td>
+                            {% if answer.isCorrect %}
+                                <span class="badge badge-success">Yes</span>
+                            {% else %}
+                                <span class="badge badge-danger">No</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Buttons Section (Now properly aligned) -->
+            <div class="d-flex justify-content-between align-items-center mt-4">
+                <!-- Back to List (Bottom Left) -->
+                <a href="{{ path('app_answer_index') }}" class="btn btn-secondary">
+                    <i class="mdi mdi-arrow-left"></i> Back to List
+                </a>
+
+                <!-- Edit & Delete (Bottom Right) -->
+                <div class="d-flex">
+                    <a href="{{ path('app_answer_edit', {'id': answer.id}) }}" class="btn btn-warning me-2">
+                        <i class="mdi mdi-pencil"></i> Edit
+                    </a>
+
+                    {{ include('answer/_delete_form.html.twig', { 'button_class': 'btn btn-danger' }) }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

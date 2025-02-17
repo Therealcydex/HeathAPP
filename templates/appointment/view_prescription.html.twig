@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Prescription Details{% endblock %}
+
+{% block body %}
+    <h1>Prescription Details</h1>
+
+    <p><strong>Medical Details:</strong> {{ prescription.medicalDetails }}</p>
+    <p><strong>Doctor's Notes:</strong> {{ prescription.doctorNotes }}</p>
+
+    <a href="{{ path('view_appointments') }}">Back to Appointments</a>
+{% endblock %}

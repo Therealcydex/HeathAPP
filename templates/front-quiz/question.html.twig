@@ -1,0 +1,83 @@
+{% extends 'base-front.html.twig' %}
+
+{% block title %}Quiz Question{% endblock %}
+
+{% block body %}
+    <div class="container mt-5 mb-5"> {# Adds white space at the top & bottom #}
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-lg p-4">
+                    <div class="card-body">
+                        <h4 class="card-title text-center mb-4">
+                            <i class="mdi mdi-help-circle"></i> {{ question.text }}
+                        </h4>
+
+                        <form method="post">
+                            {{ form_start(form) }}
+
+                            <!-- Answer Choices (Checkboxes) -->
+                            <div class="mb-4">
+                                <strong class="d-block mb-3">Select Correct Answers:</strong>
+                                {% for choice in form.answers %}
+                                    <div class="form-check ml-4">
+                                        {{ form_widget(choice, {'attr': {'class': 'form-check-input'}}) }}
+                                        {{ form_label(choice, null, {'label_attr': {'class': 'form-check-label ms-2'}}) }}
+                                    </div>
+                                {% endfor %}
+                                {{ form_errors(form.answers) }}
+                            </div>
+
+                            <!-- Navigation Buttons -->
+                            <div class="d-flex justify-content-between">
+                                {% if current_index > 0 %}
+                                    <a href="{{ path('app_front_quiz_question', {'index': current_index - 1}) }}" 
+                                    class="btn btn-secondary text-white">
+                                        <i class="mdi mdi-arrow-left"></i> Back
+                                    </a>
+                                {% else %}
+                                    <button class="btn btn-secondary text-white" disabled>
+                                        <i class="mdi mdi-arrow-left"></i> Back
+                                    </button>
+                                {% endif %}
+
+                                <button type="submit" class="btn btn-primary">
+                                    {{ is_last_question ? 'Finish' : 'Next' }} <i class="mdi mdi-arrow-right"></i>
+                                </button>
+                            </div>
+
+
+                            {{ form_end(form) }}
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .form-check {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px; /* Space between checkboxes */
+        }
+
+        .form-check-input {
+            margin-right: 8px; /* Space between checkbox and label */
+        }
+
+        .card {
+            border-radius: 12px;
+            overflow: hidden;
+            padding: 20px;
+        }
+
+        /* Ensures space between card and footer */
+        .container {
+            padding-bottom: 100px; 
+        }
+
+        .btn {
+            min-width: 120px; /* Ensures buttons have the same width */
+        }
+    </style>
+{% endblock %}

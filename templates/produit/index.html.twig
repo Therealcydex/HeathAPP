@@ -1,0 +1,45 @@
+{% extends 'baseBack.html.twig' %}
+
+{% block title %}Product List{% endblock %}
+
+{% block body %}
+    <h1>Product List</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Description</th>
+                <th>Type</th>
+                <th>Date</th>
+                <th>Prix</th>
+                <th>Image</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for produit in produits %}
+        {% set img = produit.image %}
+            <tr>
+                <td>{{ produit.nom }}</td>
+                <td>{{ produit.description }}</td>
+                <td>{{ produit.type }}</td>
+                <td>{{ produit.date ? produit.date|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ produit.prix }} <b>DT</b></td>
+                <td><img style="height:65px;width:65px;" src="{{ asset(img) }}"></td>
+                <td>
+                    <a class="btn btn-sm btn-outline-warning" href="{{ path('app_produit_show', {'id': produit.id}) }}">Show</a>
+                    <a class="btn btn-sm btn-outline-success" href="{{ path('app_produit_edit', {'id': produit.id}) }}">Edit</a>
+                    {{ include('produit/_delete_form.html.twig') }}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="8">No Products Found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a class="btn btn-sm btn-outline-primary" href="{{ path('app_produit_new') }}">Create new</a>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Book Appointment{% endblock %}
+
+{% block body %}
+    <h1>Book an Appointment</h1>
+
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button class="btn btn-primary">Book Appointment</button>
+    {{ form_end(form) }}
+{% endblock %}

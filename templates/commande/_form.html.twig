@@ -1,0 +1,59 @@
+<div class="card-body card-block">
+    {{ form_start(form,{'attr':{'novalidate':'novalidate'}},{'attr':{'class':'form-horizontal'}}) }}
+        <div class="row form-group">
+            <div class="col col-md-3">
+                {{ form_label(form.date,"Date :") }}
+            </div>
+            <div class="col-12 col-md-9">
+                {{ form_widget(form.date,{'attr':{'class':'form-control'}})}}
+                {% if form_errors(form.date) is not empty %}
+                    <small class="form-text text-muted">{{ form_errors(form.date) }}</small>
+                {% endif %}
+            </div>
+        </div>
+        <br>
+        <div class="row form-group">
+            <div class="col col-md-3">
+                {{ form_label(form.totale,"Totale :") }}
+            </div>
+            <div class="col-12 col-md-9">
+                {{ form_widget(form.totale,{'attr':{'class':'form-control'}})}}
+                {% if form_errors(form.totale) is not empty %}
+                    <small class="form-text text-muted">{{ form_errors(form.totale) }}</small>
+                {% endif %}
+            </div>
+        </div>
+        <br>
+        <div class="row form-group">
+            <div class="col col-md-3">
+                {{ form_label(form.statut,"Statut :") }}
+            </div>
+            <div class="col-12 col-md-9">
+                {{ form_widget(form.statut,{'attr':{'class':'form-control'}})}}
+                {% if form_errors(form.statut) is not empty %}
+                    <small class="form-text text-muted">{{ form_errors(form.statut) }}</small>
+                {% endif %}
+            </div>
+        </div>
+        <br>
+        <div class="row form-group">
+            <div class="col col-md-3">
+                {{ form_label(form.produits,"Produit :") }}
+            </div>
+            <div class="col-12 col-md-9">
+                {{ form_widget(form.produits,{'attr':{'class':'form-control'}})}}
+                {% if form_errors(form.produits) is not empty %}
+                    <small class="form-text text-muted">{{ form_errors(form.produits) }}</small>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div align="center" class="card-footer">
+            <button class="btn btn-sm btn-primary"><i class="zmdi zmdi-plus"></i>{{ button_label|default('Ajouter') }}</button>
+            <button class="btn btn-sm btn-outline-secondary"><a style="color:black;" href="{{ path('app_commande_index') }}">Consulter Liste</a></button>
+        </div>
+    {{ form_end(form) }}
+</div>
+
+
+

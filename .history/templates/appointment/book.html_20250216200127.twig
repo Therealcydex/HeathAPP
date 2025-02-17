@@ -1,0 +1,18 @@
+{# templates/appointment/book.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Book Appointment{% endblock %}
+
+{% block body %}
+    <h1>Book an Appointment</h1>
+
+    {{ form_start(form) }}
+    {{ form_row(form.clientName) }}
+    {{ form_row(form.doctorName) }}
+    {{ form_row(form.appointmentDate) }}
+    <button class="btn">Book Appointment</button>
+    {{ form_end(form) }}
+
+    <a href="{{ path('view_appointments') }}">View Your Appointments</a>  <!-- Link to view appointments -->
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Quiz Details{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <div class="card-body">
+            <div class="clearfix">
+                <h4 class="card-title">Quiz Details</h4>
+            </div>
+
+            <table class="table table-bordered mt-3">
+                <tbody>
+                    <tr>
+                        <th>Quiz ID</th>
+                        <td>{{ quiz.id }}</td>
+                    </tr>
+                    <tr>
+                        <th>Quiz Name</th>
+                        <td>{{ quiz.name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Quiz Type</th>
+                        <td>{{ quiz.type.value }}</td> {# Convert enum to string #}
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Buttons Section (Now properly aligned) -->
+            <div class="d-flex justify-content-between align-items-center mt-4">
+                <!-- Back to List (Bottom Left) -->
+                <a href="{{ path('app_quiz_index') }}" class="btn btn-secondary">
+                    <i class="mdi mdi-arrow-left"></i> Back to List
+                </a>
+
+                <!-- Edit & Delete (Bottom Right) -->
+                <div class="d-flex">
+                    <a href="{{ path('app_quiz_edit', {'id': quiz.id}) }}" class="btn btn-warning me-2">
+                        <i class="mdi mdi-pencil"></i> Edit
+                    </a>
+
+                    {{ include('quiz/_delete_form.html.twig', { 'button_class': 'btn btn-danger' }) }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

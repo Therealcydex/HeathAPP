@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Book Appointment{% endblock %}
+
+{% block body %}
+    <h1>Book an Appointment</h1>
+
+    {{ form_start(form) }}
+        {{ form_row(form.clientName) }}
+        {{ form_row(form.doctorName) }}
+        {{ form_row(form.appointmentDate) }}
+        
+        <button class="btn">Book Appointment</button>
+    {{ form_end(form) }}
+
+    <h2>Your Appointments</h2>
+
+    {% if appointments is not empty %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Client Name</th>
+                    <th>Doctor Name</th>
+                    <th>Appointment Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appointment in appointments %}
+                    <tr>
+                        <td>{{ appointment.id }}</td>
+                        <td>{{ appointment.clientName }}</td>
+                        <td>{{ appointment.doctorName }}</td>
+                        <td>{{ appointment.appointmentDate ? appointment.appointmentDate|date('Y-m-d H:i') : '' }}</td>
+                        <td>
+                            <form method="post" action="{{ path('appointment_delete', {'id': appointment.id}) }}" onsubmit="return confirm('Are you sure you want to delete this appointment?');">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ appointment.id) }}">
+                                <button class="btn btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No appointments available.</p>
+    {% endif %}
+{% endblock %}
