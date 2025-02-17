@@ -9,7 +9,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         
         <!-- Title -->
-        <title>{% block title %}Front Quiz{% endblock %}</title>
+        <title>{% block title %}HealthBridge{% endblock %}</title>
         
         <!-- Favicon -->
         <link rel="icon" href="{{ asset('/assets-front/img/favicon.png') }}">
@@ -76,7 +76,7 @@
                         <div class="row">
                             <div class="col-lg-3 col-md-3 col-12">
                                 <div class="logo">
-                                    <a href="{{ path('app_front_quiz_index') }}">
+                                    <a href="#">
                                         <img src="{{ asset('/assets-front/img/logo.png') }}" alt="Logo">
                                     </a>
                                 </div>
@@ -86,6 +86,7 @@
                                     <nav class="navigation">
                                         <ul class="nav menu">
                                             <li><a href="{{ path('app_front_quiz_index') }}">Quizzes</a></li>
+                                            <li><a href="{{ path('app_produit_index_front') }}">Products</a></li>
                                             <li><a href="#">Leaderboard</a></li>
                                             <li><a href="#">Profile</a></li>
                                             <li><a href="#">Contact</a></li>
@@ -108,7 +109,9 @@
         <!-- Main Content Block -->
         <div class="main-content">
             <div class="container mt-5">
-                {% block body %}{% endblock %}
+                {% block body %}
+                
+                {% endblock %}
             </div>
         </div>
         <!-- End Main Content -->

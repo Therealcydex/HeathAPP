@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Produit{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <div class="card-body">
+            <div class="clearfix">
+                <h4 class="card-title float-left">Create New Command</h4>
+            </div>
+
+            <div class="chartjs-size-monitor">
+                <div class="chartjs-size-monitor-expand"><div class=""></div></div>
+                <div class="chartjs-size-monitor-shrink"><div class=""></div></div>
+            </div>
+
+            {{ include('produit/_form.html.twig') }}
+
+        </div>
+    </div>
+
+    
+
+{% endblock %}
