@@ -45,4 +45,41 @@ class QuestionRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+
+    public function findBySearchTerm(string $searchTerm): array
+    {
+        if (empty($searchTerm)) {
+            return $this->findAll();
+        }
+
+        return $this->createQueryBuilder('q')
+            ->leftJoin('q.quiz', 'quiz')
+            ->addSelect('quiz')
+            ->where('LOWER(q.text) LIKE LOWER(:searchTerm)')
+            ->orWhere('LOWER(quiz.name) LIKE LOWER(:searchTerm)') // Search by quiz name too
+            ->setParameter('searchTerm', '%' . $searchTerm . '%')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findBySearchAndSort(string $searchTerm, string $sortField, string $sortOrder): array
+    {
+        $queryBuilder = $this->createQueryBuilder('q')
+            ->leftJoin('q.quiz', 'quiz')
+            ->addSelect('quiz');
+
+        if (!empty($searchTerm)) {
+            $queryBuilder
+                ->where('LOWER(q.text) LIKE LOWER(:searchTerm)')
+                ->orWhere('LOWER(quiz.name) LIKE LOWER(:searchTerm)')
+                ->setParameter('searchTerm', '%' . $searchTerm . '%');
+        }
+
+        if (in_array($sortField, ['q.text', 'quiz.name'])) {
+            $queryBuilder->orderBy($sortField, strtoupper($sortOrder));
+        }
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
 }

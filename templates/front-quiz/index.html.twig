@@ -3,7 +3,7 @@
 {% block title %}Select a Quiz{% endblock %}
 
 {% block body %}
-    <div class="container mt-5 mb-5"> {# Added mb-5 for bottom spacing #}
+    <div class="container mt-5 mb-5">
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="card shadow-lg">
@@ -11,6 +11,20 @@
                         <h3 class="card-title text-center mb-4">
                             <i class="mdi mdi-book-open-variant"></i> Select a Quiz
                         </h3>
+
+                        <!-- Search Form -->
+                        <form method="GET" action="{{ path('app_front_quiz_index') }}" class="mb-3">
+                            <div class="input-group">
+                                <input type="text" name="search" value="{{ searchTerm }}" class="form-control"
+                                       placeholder="Search for a quiz..." aria-label="Search">
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-primary" type="submit">Search</button>
+                                    {% if searchTerm %}
+                                        <a href="{{ path('app_front_quiz_index') }}" class="btn btn-outline-danger">Clear</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </form>
 
                         <div class="list-group">
                             {% for quiz in quizzes %}
@@ -59,9 +73,8 @@
             overflow: hidden;
         }
 
-        /* Ensures space between card and footer */
         .container {
-            padding-bottom: 60px; 
+            padding-bottom: 60px;
         }
     </style>
 {% endblock %}

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+            background-color: #f9f9f9;
+            color: #333;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .quiz {
+            margin-bottom: 30px;
+            padding: 15px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .quiz-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #3498db;
+            border-left: 5px solid #3498db;
+            padding-left: 10px;
+            margin-bottom: 10px;
+        }
+
+        .question {
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 10px;
+            color: #e67e22;
+        }
+
+        .answers {
+            list-style: none;
+            padding-left: 20px;
+        }
+
+        .answer {
+            background: #ecf0f1;
+            padding: 5px 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+
+        .answer.correct {
+            background-color: #2ecc71;
+            color: #fff;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Quiz List</h1>
+
+    {% for quiz in quizzes %}
+        <div class="quiz">
+            <div class="quiz-title">{{ quiz.name }} ({{ quiz.type.value }})</div>
+            <ul>
+                {% for question in quiz.questions %}
+                    <li class="question">Question: {{ question.text }}</li>
+                    <ul class="answers">
+                        {% for answer in question.answers %}
+                            <li class="answer {% if answer.isCorrect %}correct{% endif %}">
+                                {{ answer.text }} {% if answer.isCorrect %}✅{% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endfor %}
+</body>
+</html>

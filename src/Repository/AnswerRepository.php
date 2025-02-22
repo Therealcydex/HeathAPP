@@ -21,6 +21,43 @@ class AnswerRepository extends ServiceEntityRepository
         parent::__construct($registry, Answer::class);
     }
 
+    public function findBySearchTerm(string $searchTerm): array
+    {
+        if (empty($searchTerm)) {
+            return $this->findAll();
+        }
+
+        return $this->createQueryBuilder('a')
+            ->leftJoin('a.question', 'q')
+            ->addSelect('q')
+            ->where('LOWER(a.text) LIKE LOWER(:searchTerm)')
+            ->orWhere('LOWER(q.text) LIKE LOWER(:searchTerm)') // Search by question text too
+            ->setParameter('searchTerm', '%' . $searchTerm . '%')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findBySearchAndSort(string $searchTerm, string $sortField, string $sortOrder): array
+    {
+        $queryBuilder = $this->createQueryBuilder('a')
+            ->leftJoin('a.question', 'q')
+            ->addSelect('q');
+
+        if (!empty($searchTerm)) {
+            $queryBuilder
+                ->where('LOWER(a.text) LIKE LOWER(:searchTerm)')
+                ->orWhere('LOWER(q.text) LIKE LOWER(:searchTerm)')
+                ->setParameter('searchTerm', '%' . $searchTerm . '%');
+        }
+
+        if (in_array($sortField, ['a.text', 'q.text', 'a.isCorrect'])) {
+            $queryBuilder->orderBy($sortField, strtoupper($sortOrder));
+        }
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
+
 //    /**
 //     * @return Answer[] Returns an array of Answer objects
 //     */

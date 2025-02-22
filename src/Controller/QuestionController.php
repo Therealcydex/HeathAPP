@@ -15,10 +15,19 @@ use Symfony\Component\Routing\Annotation\Route;
 class QuestionController extends AbstractController
 {
     #[Route('/', name: 'app_question_index', methods: ['GET'])]
-    public function index(QuestionRepository $questionRepository): Response
+    public function index(Request $request, QuestionRepository $questionRepository): Response
     {
+        $searchTerm = $request->query->get('search', '');
+        $sortField = $request->query->get('sort', 'text'); // Default sort by question text
+        $sortOrder = $request->query->get('order', 'asc');
+
+        $questions = $questionRepository->findBySearchAndSort($searchTerm, $sortField, $sortOrder);
+
         return $this->render('question/index.html.twig', [
-            'questions' => $questionRepository->findAll(),
+            'questions' => $questions,
+            'searchTerm' => $searchTerm,
+            'sortField' => $sortField,
+            'sortOrder' => $sortOrder,
         ]);
     }
 

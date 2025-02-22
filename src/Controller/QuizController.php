@@ -13,6 +13,10 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use App\Form\AnswerTypeFront;
 use App\Entity\Question;
+use Dompdf\Dompdf;
+use Dompdf\Options;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 
 
 
@@ -20,10 +24,19 @@ use App\Entity\Question;
 class QuizController extends AbstractController
 {
     #[Route('/', name: 'app_quiz_index', methods: ['GET'])]
-    public function index(QuizRepository $quizRepository): Response
+    public function index(Request $request, QuizRepository $quizRepository): Response
     {
+        $searchTerm = $request->query->get('search', '');
+        $sortField = $request->query->get('sort', 'name'); // Default sort by name
+        $sortOrder = $request->query->get('order', 'asc'); // Default order asc
+
+        $quizzes = $quizRepository->findBySearchAndSort($searchTerm, $sortField, $sortOrder);
+
         return $this->render('quiz/index.html.twig', [
-            'quizzes' => $quizRepository->findAll(),
+            'quizzes' => $quizzes,
+            'searchTerm' => $searchTerm,
+            'sortField' => $sortField,
+            'sortOrder' => $sortOrder,
         ]);
     }
 
@@ -85,10 +98,14 @@ class QuizController extends AbstractController
     }
 
     #[Route('/quizList', name: 'app_front_quiz_index')]
-    public function quizList(QuizRepository $quizRepository): Response
+    public function quizList(Request $request, QuizRepository $quizRepository): Response
     {
+        $searchTerm = $request->query->get('search', '');
+        $quizzes = $quizRepository->findBySearchTerm($searchTerm);
+
         return $this->render('front-quiz/index.html.twig', [
-            'quizzes' => $quizRepository->findAll(),
+            'quizzes' => $quizzes,
+            'searchTerm' => $searchTerm, // Pass search term to the template
         ]);
     }
 
@@ -184,19 +201,73 @@ class QuizController extends AbstractController
 
 
     #[Route('/quiz/finish', name: 'app_front_quiz_finish')]
-    public function finishQuiz(SessionInterface $session): Response
+    public function finishQuiz(SessionInterface $session, MailerInterface $mailer): Response
     {
         $score = $session->get('score', 0);
         $totalQuestions = count($session->get('quiz_questions', []));
-
-        // Clear session
         $session->remove('quiz_questions');
         $session->remove('current_question_index');
         $session->remove('quiz_id');
 
+        // Determine pass/fail status
+        $passingScore = ceil($totalQuestions * 0.6); // Example: 60% to pass
+        $status = ($score >= $passingScore) ? '✅ Congratulations! You passed the quiz.' : '❌ Sorry, you failed the quiz. Try again!';
+
+        // Send email notification
+        $recipientEmail = "baklouti.wassim@esprit.tn"; // Change this to your email for testing
+
+        $email = (new Email())
+            ->from('hammoudawassim696@gmail.com') // Change sender
+            ->to($recipientEmail)
+            ->subject('Quiz Completion Results')
+            ->html("
+                <h2>Quiz Results</h2>
+                <p>You have completed the quiz.</p>
+                <p><strong>Score:</strong> $score / $totalQuestions</p>
+                <p><strong>Status:</strong> $status</p>
+                <br>
+                <p>Thank you for taking the quiz!</p>
+            ");
+
+        $mailer->send($email); // Send the email
+
         return $this->render('front-quiz/finish.html.twig', [
             'score' => $score,
             'total' => $totalQuestions,
+        ]);
+    }
+
+    #[Route('/export/pdf', name: 'app_quiz_export_pdf')]
+    public function exportPdf(QuizRepository $quizRepository): Response
+    {
+        // Retrieve all quizzes
+        $quizzes = $quizRepository->findAll();
+
+        // Render the HTML using our Twig template
+        $html = $this->renderView('pdf/export.html.twig', [
+            'quizzes' => $quizzes,
+        ]);
+
+        // Configure Dompdf according to your needs
+        $options = new Options();
+        $options->set('defaultFont', 'Arial');
+
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml($html);
+
+        // (Optional) Setup the paper size and orientation
+        $dompdf->setPaper('A4', 'portrait');
+
+        // Render the HTML as PDF
+        $dompdf->render();
+
+        // Get the generated PDF output
+        $pdfOutput = $dompdf->output();
+
+        // Return a PDF response (with appropriate headers)
+        return new Response($pdfOutput, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="quizzes.pdf"',
         ]);
     }
 

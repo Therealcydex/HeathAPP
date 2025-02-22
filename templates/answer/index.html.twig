@@ -7,16 +7,44 @@
         <div class="card-body">
             <div class="clearfix">
                 <h4 class="card-title float-left">Answer List</h4>
-                <a href="{{ path('app_answer_new') }}" class="btn btn-gradient-primary float-right"><i class="mdi mdi-plus"></i> Create New Answer</a>
+                <a href="{{ path('app_answer_new') }}" class="btn btn-gradient-primary float-right">
+                    <i class="mdi mdi-plus"></i> Create New Answer
+                </a>
             </div>
+
+            <!-- Search Form -->
+            <form method="GET" action="{{ path('app_answer_index') }}" class="mt-3">
+                <div class="input-group">
+                    <input type="text" name="search" value="{{ searchTerm }}" class="form-control"
+                           placeholder="Search answers or questions..." aria-label="Search">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-primary" type="submit">Search</button>
+                        {% if searchTerm %}
+                            <a href="{{ path('app_answer_index') }}" class="btn btn-outline-danger">Clear</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </form>
 
             <div class="table-responsive mt-4">
                 <table class="table table-hover w-100" style="table-layout: fixed;">
                     <thead class="table-light">
                         <tr>
-                            <th>Question</th>
-                            <th>Answer</th> {# Renamed from "Text" to "Answer" #}
-                            <th>Is Correct</th>
+                            <th>
+                                <a href="{{ path('app_answer_index', {'sort': 'q.text', 'order': sortOrder == 'asc' ? 'desc' : 'asc'}) }}">
+                                    Question
+                                </a>
+                            </th>
+                            <th>
+                                <a href="{{ path('app_answer_index', {'sort': 'text', 'order': sortOrder == 'asc' ? 'desc' : 'asc'}) }}">
+                                    Answer
+                                </a>
+                            </th>
+                            <th>
+                                <a href="{{ path('app_answer_index', {'sort': 'isCorrect', 'order': sortOrder == 'asc' ? 'desc' : 'asc'}) }}">
+                                    Is Correct
+                                </a>
+                            </th>
                             <th>Actions</th>
                         </tr>
                     </thead>
