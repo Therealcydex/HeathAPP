@@ -1,0 +1,74 @@
+{% extends 'base-front.html.twig' %}
+
+{% block title %}Prescription Details{% endblock %}
+
+{% block body %}
+    <div style="max-width: 800px; margin: 30px auto; padding: 20px; background-color: #f9f9f9; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+        <h1 style="font-size: 2em; text-align: center; color: #007bff; margin-bottom: 20px;">Prescription Details</h1>
+
+        <div style="margin-bottom: 15px;">
+            <p style="font-size: 1.2em; line-height: 1.6em; color: #333;">
+                <strong>Medical Details:</strong> 
+                <span style="color: #555; font-style: italic;">{{ prescription.medicalDetails }}</span>
+            </p>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <p style="font-size: 1.2em; line-height: 1.6em; color: #333;">
+                <strong>Doctor's Notes:</strong> 
+                <span style="color: #555; font-style: italic;">{{ prescription.doctorNotes }}</span>
+            </p>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="{{ path('view_appointments') }}" style="color: #007bff; font-weight: bold; text-decoration: none; font-size: 1.1em; transition: color 0.3s;">
+                Back to Appointments
+            </a>
+        </div>
+    </div>
+
+    <style>
+        /* Prescription detail container */
+        .prescription-details-container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Heading style */
+        .prescription-details-container h1 {
+            font-size: 2em;
+            text-align: center;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+
+        /* Text style for Medical Details and Doctor's Notes */
+        .prescription-details-container p {
+            font-size: 1.2em;
+            line-height: 1.6em;
+            color: #333;
+        }
+
+        .prescription-details-container span {
+            color: #555;
+            font-style: italic;
+        }
+
+        /* Link style for Back to Appointments */
+        .prescription-details-container a {
+            color: #007bff;
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 1.1em;
+            transition: color 0.3s;
+        }
+
+        .prescription-details-container a:hover {
+            color: #0056b3;
+        }
+    </style>
+{% endblock %}

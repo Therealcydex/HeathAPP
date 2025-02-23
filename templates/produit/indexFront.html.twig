@@ -1,0 +1,39 @@
+{% extends 'base-front.html.twig' %}
+
+{% block title %}Product List{% endblock %}
+
+{% block body %}
+    <div class="row">
+    {% for produit in produits %}
+    {% set img = produit.image %}
+        <div class="col-lg-4 col-md-12 col-12">
+			<div class="single-table">
+			    <!-- Table Head -->
+				<div class="table-head">
+					<div class="icon">
+						<img src="{{asset(img)}}">
+					</div>
+					<h4 class="title">{{ produit.nom }}</h4>
+					<div class="price">
+						<p class="amount">{{ produit.prix }} <b>DT</b><span>/ Per One</span></p>
+				    </div>	
+				</div>
+				<!-- Table List -->
+				<ul class="table-list">
+					<li>Type : {{ produit.type }}</li>
+					<li>Date : {{ produit.date ? produit.date|date('Y-m-d H:i:s') : ''  }}</li>
+				</ul>
+				<div class="table-bottom">
+                    <a class="btn" href="{{ path('app_commande_new_front', {'id': produit.id}) }}">Commandez</a>
+				</div>
+				<!-- Table Bottom -->
+			</div>
+		</div>
+    {% else %}
+        <div style="margin-left:470px;" class="alert alert-warning text-center" role="alert">
+            <i class="mdi mdi-alert-circle"></i> No Products available.
+        </div>
+    {% endfor %}
+    </div>
+
+{% endblock %}

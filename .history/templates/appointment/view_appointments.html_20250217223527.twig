@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}View Appointments{% endblock %}
+
+{% block body %}
+    <h1 style="font-size: 2em; font-weight: bold; margin-bottom: 20px; color: #333;">Your Appointments</h1>
+
+    <div style="display: flex; flex-direction: column; gap: 20px; margin-bottom: 30px;">
+        {% for appointment in appointments %}
+            <div style="background-color: #fff; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); padding: 20px; width: 33%; margin: 0 auto;">
+                <h3 style="font-size: 1.5em; color: #007bff; margin-bottom: 10px;">
+                    {{ appointment.clientName }} - 
+                    {% if appointment.doctor %}
+                        {{ appointment.doctor.name }}
+                    {% else %}
+                        No Doctor Assigned
+                    {% endif %}
+                </h3>
+                <p style="font-size: 1.1em; margin-bottom: 10px;">Appointment Date: <strong>{{ appointment.appointmentDate ? appointment.appointmentDate|date('Y-m-d') : 'N/A' }}</strong></p>
+                
+                <div style="margin-bottom: 15px;">
+                    {% if appointment.prescriptions is not empty %}
+                        <div style="color: #28a745;">
+                            <h4 style="margin-bottom: 10px;">Prescriptions:</h4>
+                            <ul style="list-style-type: none; padding-left: 0;">
+                                {% for prescription in appointment.prescriptions %}
+                                    <li>
+                                        <a href="{{ path('view_prescription', {'id': prescription.id}) }}" style="color: #007bff; text-decoration: underline;">View Prescription</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% else %}
+                        <div style="color: #28a745;">
+                            <a href="{{ path('add_prescription', {'appointmentId': appointment.id}) }}" style="color: #28a745; text-decoration: underline;">Add Prescription</a>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <form action="{{ path('app_appointment_delete', {'id': appointment.id}) }}" method="post" onsubmit="return confirm('Are you sure you want to delete this appointment?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ appointment.id) }}">
+                        <button type="submit" style="background-color: #dc3545; color: #fff; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s; width: 100%;">Cancel Appointment</button>
+                    </form>
+                </div>
+            </div>
+        {% else %}
+            <p style="color: #888; text-align: center;">No appointments available.</p>
+        {% endfor %}
+    </div>
+
+    <div>
+        <a href="{{ path('book_appointment') }}" style="background-color: #007bff; color: #fff; padding: 12px 25px; border-radius: 5px; text-decoration: none; font-weight: bold; transition: background-color 0.3s; display: inline-block; width: 100%; text-align: center;">Book a New Appointment</a>
+    </div>
+{% endblock %}

@@ -1,0 +1,139 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Appointment{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-secondary text-white text-center">
+                        <h3 class="card-title mb-0">Appointment Details</h3>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered">
+                            <tbody>
+                                <tr>
+                                    <th>ID</th>
+                                    <td>{{ appointment.id }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Client Name</th>
+                                    <td>{{ appointment.clientName }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Doctor Name</th>
+                                    <td>{{ appointment.doctor ? appointment.doctor.name : 'N/A' }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Appointment Date</th>
+                                    <td>{{ appointment.appointmentDate ? appointment.appointmentDate|date('Y-m-d') : '' }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="text-center mt-4">
+                            <a href="{{ path('app_appointment_index') }}" class="btn btn-secondary btn-lg">
+                                <i class="fas fa-arrow-left"></i> Back to List
+                            </a>
+                            <a href="{{ path('back_app_appointment_edit', {'id': appointment.id}) }}" class="btn btn-warning btn-lg mx-3">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                        </div>
+
+                        <div class="mt-4 text-center">
+                            {{ include('appointmentBack/_delete_form.html.twig') }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .table {
+            width: 100%;
+            margin-top: 20px;
+            font-size: 1.1em;
+        }
+
+        .table th, .table td {
+            padding: 12px;
+            text-align: left;
+        }
+
+        .card {
+            border-radius: 12px;
+            border: none;
+        }
+
+        .card-header {
+            background-color: #6c757d; /* Gray background for header */
+            color: white;
+            padding: 15px;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .card-body {
+            background-color: #f4f7fc;
+            border-radius: 0 0 12px 12px;
+        }
+
+        .btn-lg {
+            font-size: 1.2em;
+            padding: 12px 25px;
+            border-radius: 5px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            border: none;
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+            border: none;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+
+        .text-center {
+            margin-top: 20px;
+        }
+
+        .fas {
+            margin-right: 8px;
+        }
+
+        /* Style for delete button */
+        .btn-danger {
+            background-color: #dc3545;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1.1em;
+            border-radius: 5px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+            transform: scale(1.05);
+        }
+
+        .btn-danger:focus {
+            outline: none;
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.5);
+        }
+    </style>
+{% endblock %}

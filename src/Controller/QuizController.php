@@ -98,10 +98,9 @@ class QuizController extends AbstractController
         $quiz = $quizRepository->find($id);
     
         if (!$quiz) {
-            throw $this->createNotFoundException('Quiz not found');
+            throw $this->createNotFoundException('Quiz not found!');
         }
     
-        // Get questions
         $questions = $quiz->getQuestions();
         
         if (count($questions) === 0) {
@@ -109,7 +108,6 @@ class QuizController extends AbstractController
             return $this->redirectToRoute('app_front_quiz_index');
         }
     
-        // Store questions in session to track progress
         $session->set('quiz_questions', $questions);
         $session->set('current_question_index', 0);
         $session->set('quiz_id', $quiz->getId());
@@ -124,7 +122,6 @@ class QuizController extends AbstractController
     {
         $questions = $session->get('quiz_questions', []);
 
-        // If quiz is finished, redirect to results page
         if ($index >= count($questions)) {
             return $this->redirectToRoute('app_front_quiz_finish');
         }
@@ -142,12 +139,10 @@ class QuizController extends AbstractController
             throw $this->createNotFoundException('Question not found');
         }
 
-        // Check if answers exist
         if ($question->getAnswers()->count() === 0) {
             throw new \Exception('No answers found for question ID: ' . $question->getId());
         }
 
-        // ✅ Pass the possible answers to the form
         $form = $this->createForm(AnswerTypeFront::class, null, [
             'answers' => $question->getAnswers(),
         ]);
@@ -155,10 +150,8 @@ class QuizController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $selectedAnswers = $form->get('answers')->getData(); // ✅ Get selected answers
-            $correctAnswers = $question->getAnswers()->filter(fn($a) => $a->isIsCorrect()); // ✅ Get correct answers
-
-            // Compare selected answers with correct ones
+            $selectedAnswers = $form->get('answers')->getData();
+            $correctAnswers = $question->getAnswers()->filter(fn($a) => $a->isIsCorrect()); 
             $correctCount = count(array_intersect(
                 array_map(fn($a) => $a->getId(), $selectedAnswers),
                 array_map(fn($a) => $a->getId(), $correctAnswers->toArray())
@@ -168,7 +161,6 @@ class QuizController extends AbstractController
                 $session->set('score', $session->get('score', 0) + 1);
             }
 
-            // Move to next question
             return $this->redirectToRoute('app_front_quiz_question', ['index' => $index + 1]);
         }
 
@@ -176,7 +168,7 @@ class QuizController extends AbstractController
             'question' => $question,
             'form' => $form->createView(),
             'is_last_question' => ($index == count($questions) - 1),
-            'current_index' => $index, // ✅ Track current index
+            'current_index' => $index, 
         ]);
     }
 
@@ -189,7 +181,6 @@ class QuizController extends AbstractController
         $score = $session->get('score', 0);
         $totalQuestions = count($session->get('quiz_questions', []));
 
-        // Clear session
         $session->remove('quiz_questions');
         $session->remove('current_question_index');
         $session->remove('quiz_id');
@@ -199,9 +190,6 @@ class QuizController extends AbstractController
             'total' => $totalQuestions,
         ]);
     }
-
-
-
 
 
 }
