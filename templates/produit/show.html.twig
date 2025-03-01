@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Produit{% endblock %}
+
+{% block body %}
+    <h1>Produit</h1>
+
+    <table class="table">
+    {% set img = produit.image %}
+        <tbody>
+            <tr>
+                <th>Nom</th>
+                <td>{{ produit.nom }}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>{{ produit.description }}</td>
+            </tr>
+            <tr>
+                <th>Type</th>
+                <td>{{ produit.type }}</td>
+            </tr>
+            <tr>
+                <th>Date</th>
+                <td>{{ produit.date ? produit.date|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Prix</th>
+                <td>{{ produit.prix }} <b>DT</b></td>
+            </tr>
+            <tr>
+                <th>Image</th>
+                <td><img style="height:250px;width:250px;" src="{{asset(img)}}" ></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div align="center">
+        <a class="btn btn-sm btn-outline-primary" href="{{ path('app_produit_index') }}">Back To List</a>
+        <a class="btn btn-sm btn-outline-success" href="{{ path('app_produit_edit', {'id': produit.id}) }}">Edit</a>
+    </div>
+    
+{% endblock %}

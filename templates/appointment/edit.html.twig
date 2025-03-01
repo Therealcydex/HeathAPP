@@ -1,0 +1,47 @@
+{% extends 'base-front.html.twig' %}
+
+{% block title %}Edit Appointment{% endblock %}
+
+{% block body %}
+    <h1>Edit Appointment</h1>
+
+    {{ form_start(form) }}
+        <div style="margin-bottom: 15px;">
+            {{ form_row(form.clientName, { 'attr': { 'class': 'form-control' } }) }}
+            {% if form.clientName.vars.errors|length > 0 %}
+                <div class="invalid-feedback">
+                    {{ form_errors(form.clientName) }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            {# Doctor select dropdown for editing #}
+            {{ form_row(form.doctor, { 'attr': { 'class': 'form-control' } }) }}
+            {% if form.doctor.vars.errors|length > 0 %}
+                <div class="invalid-feedback">
+                    {{ form_errors(form.doctor) }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            {{ form_row(form.appointmentDate, { 'attr': { 'class': 'form-control' } }) }}
+            {% if form.appointmentDate.vars.errors|length > 0 %}
+                <div class="invalid-feedback">
+                    {{ form_errors(form.appointmentDate) }}
+                </div>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn" style="padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 1.1em; transition: background-color 0.3s;">
+            Save Changes
+        </button>
+    {{ form_end(form) }}
+
+    <div style="margin-top: 20px; text-align: center;">
+        <a href="{{ path('view_appointments') }}" style="color: #007bff; font-weight: bold; text-decoration: none; font-size: 1.1em; transition: color 0.3s;">
+            Back to Appointments
+        </a>
+    </div>
+{% endblock %}

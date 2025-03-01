@@ -15,25 +15,21 @@ class AnswerTypeFront extends AbstractType
     {
         $builder
             ->add('answers', ChoiceType::class, [
-                'choices' => $options['answers'], // ✅ Pass answers dynamically
+                'choices' => $options['answers'], 
                 'choice_label' => function ($choice) {
-                    return $choice->getText(); // ✅ Show the answer text
+                    return $choice->getText(); 
                 },
-                'choice_value' => 'id',  // ✅ Store answer ID
-                'expanded' => true,  // ✅ Display as checkboxes
-                'multiple' => true,  // ✅ Allow multiple selections
+                'choice_value' => 'id', 
+                'expanded' => true, 
+                'multiple' => true, 
             ]);
-            // ->add('submit', SubmitType::class, [
-            //     'label' => 'Next',
-            //     'attr' => ['class' => 'btn btn-gradient-primary'],
-            // ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => null, // ✅ No binding to an entity
-            'answers' => [], // ✅ Default to empty list
+            'data_class' => null, 
+            'answers' => [], 
         ]);
     }
 }

@@ -1,0 +1,3 @@
+app_appointment_index:
+    path: /appointmentBack
+    controller: App\Controller\AppointmentControllerBack::index
