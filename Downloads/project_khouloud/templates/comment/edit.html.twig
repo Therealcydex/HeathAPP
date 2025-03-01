@@ -1,0 +1,84 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Comment{% endblock %}
+
+{% block body %}
+    <style>
+        dl, ol, ul {
+            margin-top: 0;
+            margin-bottom: 0;
+            color: tomato;
+        }
+        .h-full {
+            height: auto;
+        }
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 2rem;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .form-container h2 {
+            text-align: center;
+            color: #176abc;
+            margin-bottom: 1.5rem;
+        }
+        .form-container .form-group {
+            margin-bottom: 1rem;
+        }
+        .form-container .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+        .form-container .form-group input,
+        .form-container .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            transition: border-color 0.3s;
+        }
+        .form-container .form-group input:focus,
+        .form-container .form-group textarea:focus {
+            border-color: #176abc;
+            outline: none;
+        }
+        .form-container .form-actions {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+        .form-container .form-actions button {
+            background-color: #176abc;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .form-container .form-actions button:hover {
+            background-color: #135a97;
+        }
+    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <body class="bg-white text-[#176abc] h-screen overflow-y-auto">
+    <div class="container mx-auto p-6 w-full h-full relative">
+        <div class="form-container">
+            <h2>Edit Comment</h2>
+            {{ form_start(form, {'attr': {'class': 'space-y-4', 'novalidate': 'novalidate'}}) }}
+            <div class="form-group">
+                {{ form_label(form.content, null, {'class': 'block text-gray-700 font-semibold'}) }}
+                {{ form_widget(form.content, {'attr': {'class': 'w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#176abc]'}}) }}
+                <p class="text-red-500 text-sm">{{ form_errors(form.content) }}</p>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="bg-[#176abc] text-white px-4 py-2 rounded-lg hover:bg-[#135a97]">Save Changes</button>
+            </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+    </body>
+{% endblock %}
