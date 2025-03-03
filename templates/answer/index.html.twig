@@ -13,12 +13,11 @@
             </div>
 
             <!-- Search Form -->
-            <form method="GET" action="{{ path('app_answer_index') }}" class="mt-3">
+            <form method="GET" action="#" class="mt-3" id="search-form" onsubmit="return false;">
                 <div class="input-group">
-                    <input type="text" name="search" value="{{ searchTerm }}" class="form-control"
+                    <input type="text" name="search" id="search-input" value="{{ searchTerm }}" class="form-control"
                            placeholder="Search answers or questions..." aria-label="Search">
                     <div class="input-group-append">
-                        <button class="btn btn-outline-primary" type="submit">Search</button>
                         {% if searchTerm %}
                             <a href="{{ path('app_answer_index') }}" class="btn btn-outline-danger">Clear</a>
                         {% endif %}
@@ -26,57 +25,51 @@
                 </div>
             </form>
 
-            <div class="table-responsive mt-4">
-                <table class="table table-hover w-100" style="table-layout: fixed;">
-                    <thead class="table-light">
-                        <tr>
-                            <th>
-                                <a href="{{ path('app_answer_index', {'sort': 'q.text', 'order': sortOrder == 'asc' ? 'desc' : 'asc'}) }}">
-                                    Question
-                                </a>
-                            </th>
-                            <th>
-                                <a href="{{ path('app_answer_index', {'sort': 'text', 'order': sortOrder == 'asc' ? 'desc' : 'asc'}) }}">
-                                    Answer
-                                </a>
-                            </th>
-                            <th>
-                                <a href="{{ path('app_answer_index', {'sort': 'isCorrect', 'order': sortOrder == 'asc' ? 'desc' : 'asc'}) }}">
-                                    Is Correct
-                                </a>
-                            </th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for answer in answers %}
-                            <tr>
-                                <td>{{ answer.question.text }}</td>
-                                <td>{{ answer.text }}</td>
-                                <td>
-                                    {% if answer.isCorrect %}
-                                        <span class="badge badge-success">Yes</span>
-                                    {% else %}
-                                        <span class="badge badge-danger">No</span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    <a href="{{ path('app_answer_show', {'id': answer.id}) }}" class="btn btn-info btn-sm">
-                                        <i class="mdi mdi-eye"></i> Show
-                                    </a>
-                                    <a href="{{ path('app_answer_edit', {'id': answer.id}) }}" class="btn btn-warning btn-sm">
-                                        <i class="mdi mdi-pencil"></i> Edit
-                                    </a>
-                                </td>
-                            </tr>
-                        {% else %}
-                            <tr>
-                                <td colspan="4" class="text-center">No records found</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+            <div class="table-responsive mt-4" id="answers-container">
+                {% include 'answer/_answer_list.html.twig' %}
+            </div>
+            <!-- Pagination -->
+            <div id="pagination-container" class="mt-3">
+                {% include 'answer/_pagination.html.twig' %}
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('search-input');
+            const answersContainer = document.getElementById('answers-container');
+            let debounceTimer;
+
+            function fetchAnswers(queryParams) {
+                fetch('{{ path('app_answer_search') }}' + '?' + new URLSearchParams(queryParams))
+                    .then(response => response.json())
+                    .then(data => {
+                        answersContainer.innerHTML = data.html;
+                        attachSortingEvents();
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+
+            searchInput.addEventListener('input', function() {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    fetchAnswers({ search: searchInput.value });
+                }, 300); // Debounce to prevent excessive requests
+            });
+
+            function attachSortingEvents() {
+                document.querySelectorAll('.sort-link').forEach(link => {
+                    link.addEventListener('click', function(event) {
+                        event.preventDefault();
+                        const sortField = this.dataset.sort;
+                        const sortOrder = this.dataset.order;
+                        fetchAnswers({ search: searchInput.value, sort: sortField, order: sortOrder });
+                    });
+                });
+            }
+
+            attachSortingEvents();
+        });
+    </script>
 {% endblock %}

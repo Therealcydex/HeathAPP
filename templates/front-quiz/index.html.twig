@@ -1,3 +1,4 @@
+{# templates/front-quiz/index.html.twig #}
 {% extends 'base-front.html.twig' %}
 
 {% block title %}Select a Quiz{% endblock %}
@@ -12,13 +13,13 @@
                             <i class="mdi mdi-book-open-variant"></i> Select a Quiz
                         </h3>
 
-                        <!-- Search Form -->
+                        <!-- Formulaire de recherche (non-AJAX de base) -->
                         <form method="GET" action="{{ path('app_front_quiz_index') }}" class="mb-3">
                             <div class="input-group">
                                 <input type="text" name="search" value="{{ searchTerm }}" class="form-control"
-                                       placeholder="Search for a quiz..." aria-label="Search">
+                                       placeholder="Search for a quiz..." aria-label="Search" id="quiz-search-input">
                                 <div class="input-group-append">
-                                    <button class="btn btn-outline-primary" type="submit">Search</button>
+                                    <button class="btn btn-outline-primary" type="submit" id="search-btn">Search</button>
                                     {% if searchTerm %}
                                         <a href="{{ path('app_front_quiz_index') }}" class="btn btn-outline-danger">Clear</a>
                                     {% endif %}
@@ -26,23 +27,10 @@
                             </div>
                         </form>
 
-                        <div class="list-group">
-                            {% for quiz in quizzes %}
-                                <a href="{{ path('app_front_quiz_take', {'id': quiz.id}) }}" 
-                                   class="list-group-item list-group-item-action d-flex justify-content-between align-items-center quiz-item">
-                                    <span>
-                                        <i class="mdi mdi-play-circle text-primary"></i> 
-                                        <strong>{{ quiz.name }}</strong>
-                                    </span>
-                                    <span class="badge bg-primary text-white rounded-pill">
-                                        {{ quiz.type.value|capitalize }}
-                                    </span>
-                                </a>
-                            {% else %}
-                                <div class="alert alert-warning text-center" role="alert">
-                                    <i class="mdi mdi-alert-circle"></i> No quizzes available.
-                                </div>
-                            {% endfor %}
+                        <!-- Conteneur dynamique pour les quizzes -->
+                        <div id="quiz-list-container">
+                            {# Inclusion initiale des quizzes #}
+                            {% include 'front-quiz/_quiz_list.html.twig' with {'quizzes': quizzes} %}
                         </div>
                     </div>
                 </div>
@@ -50,6 +38,7 @@
         </div>
     </div>
 
+    {# CSS optionnel #}
     <style>
         .quiz-item {
             font-size: 1.1rem;
@@ -57,24 +46,62 @@
             transition: all 0.3s ease-in-out;
             border-radius: 8px;
         }
-
         .quiz-item:hover {
             background: #f8f9fa;
             transform: scale(1.02);
         }
-
         .badge {
             font-size: 0.9rem;
             padding: 8px 12px;
         }
-
         .card {
             border-radius: 12px;
             overflow: hidden;
         }
-
         .container {
             padding-bottom: 60px;
         }
     </style>
+
+    {# Script JavaScript pour la recherche AJAX #}
+    <script>
+        const searchInput = document.getElementById('quiz-search-input');
+        const searchButton = document.getElementById('search-btn');
+        const quizListContainer = document.getElementById('quiz-list-container');
+
+        /**
+         * Fonction pour appeler la route AJAX et mettre à jour la liste des quizzes
+         * @param {string} searchValue
+         */
+        function fetchQuizzes(searchValue = '') {
+            // Construire l'URL : /quiz/front-search?search=...
+            const url = new URL('{{ path('app_front_quiz_search') }}', window.location.origin);
+            url.searchParams.append('search', searchValue);
+
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.text(); // On veut du HTML
+                })
+                .then(html => {
+                    // Injecter le HTML dans le conteneur
+                    quizListContainer.innerHTML = html;
+                })
+                .catch(error => {
+                    console.error('Error fetching quizzes (front):', error);
+                });
+        }
+
+        
+        searchButton.addEventListener('click', (e) => {
+            e.preventDefault(); 
+            fetchQuizzes(searchInput.value);
+        });
+
+        searchInput.addEventListener('keyup', () => {
+            fetchQuizzes(searchInput.value);
+        });
+    </script>
 {% endblock %}

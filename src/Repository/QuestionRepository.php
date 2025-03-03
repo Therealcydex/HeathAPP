@@ -82,4 +82,24 @@ class QuestionRepository extends ServiceEntityRepository
         return $queryBuilder->getQuery()->getResult();
     }
 
+    public function findBySearchAndSortQuery(string $searchTerm, string $sortField, string $sortOrder)
+    {
+        $queryBuilder = $this->createQueryBuilder('q')
+            ->leftJoin('q.quiz', 'quiz')
+            ->addSelect('quiz');
+
+        if (!empty($searchTerm)) {
+            $queryBuilder
+                ->where('LOWER(q.text) LIKE LOWER(:searchTerm)')
+                ->orWhere('LOWER(quiz.name) LIKE LOWER(:searchTerm)')
+                ->setParameter('searchTerm', '%' . $searchTerm . '%');
+        }
+
+        if (in_array($sortField, ['q.text', 'quiz.name'])) {
+            $queryBuilder->orderBy($sortField, strtoupper($sortOrder));
+        }
+
+        return $queryBuilder->getQuery();
+    }
+
 }

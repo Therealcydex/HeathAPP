@@ -10,24 +10,60 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Knp\Component\Pager\PaginatorInterface;
 
 #[Route('/answer')]
 class AnswerController extends AbstractController
 {
     #[Route('/', name: 'app_answer_index', methods: ['GET'])]
-    public function index(Request $request, AnswerRepository $answerRepository): Response
+    public function index(Request $request, AnswerRepository $answerRepository, PaginatorInterface $paginator): Response
     {
         $searchTerm = $request->query->get('search', '');
-        $sortField = $request->query->get('sort', 'text'); // Default sort by answer text
+        $sortField = $request->query->get('sort', 'a.text');
         $sortOrder = $request->query->get('order', 'asc');
+        $page = max(1, (int) $request->query->get('page', 1));
 
-        $answers = $answerRepository->findBySearchAndSort($searchTerm, $sortField, $sortOrder);
+        // Fetch query results
+        $query = $answerRepository->findBySearchAndSortQuery($searchTerm, $sortField, $sortOrder);
+
+        // Paginate results (10 items per page)
+        $pagination = $paginator->paginate($query, $page, 10);
 
         return $this->render('answer/index.html.twig', [
-            'answers' => $answers,
+            'answers' => $pagination,
             'searchTerm' => $searchTerm,
             'sortField' => $sortField,
             'sortOrder' => $sortOrder,
+            'pagination' => [
+                'currentPage' => $pagination->getCurrentPageNumber(),
+                'totalPages' => $pagination->getPageCount(),
+            ]
+        ]);
+    }
+
+    #[Route('/search', name: 'app_answer_search', methods: ['GET'])]
+    public function search(Request $request, AnswerRepository $answerRepository, PaginatorInterface $paginator): JsonResponse
+    {
+        $searchTerm = $request->query->get('search', '');
+        $sortField = $request->query->get('sort', 'a.text');
+        $sortOrder = $request->query->get('order', 'asc');
+        $page = max(1, (int) $request->query->get('page', 1));
+
+        $query = $answerRepository->findBySearchAndSortQuery($searchTerm, $sortField, $sortOrder);
+        $pagination = $paginator->paginate($query, $page, 10);
+
+        return new JsonResponse([
+            'html' => $this->renderView('answer/_answer_list.html.twig', [
+                'answers' => $pagination,
+                'sortField' => $sortField,
+                'sortOrder' => $sortOrder,
+                'searchTerm' => $searchTerm,
+                'pagination' => [
+                    'currentPage' => $pagination->getCurrentPageNumber(),
+                    'totalPages' => $pagination->getPageCount(),
+                ]
+            ])
         ]);
     }
 
@@ -39,8 +75,8 @@ class AnswerController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($answer); //ajout
-            $entityManager->flush(); //refresh
+            $entityManager->persist($answer);
+            $entityManager->flush();
 
             return $this->redirectToRoute('app_answer_index', [], Response::HTTP_SEE_OTHER);
         }

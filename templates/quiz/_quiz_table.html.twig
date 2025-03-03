@@ -1,0 +1,38 @@
+{% if quizzes is not empty %}
+    <table class="table table-hover w-100" style="table-layout: fixed;">
+        <thead class="table-light">
+            <tr>
+                <th>
+                    <!-- Garder la logique de tri si tu le souhaites -->
+                    <a href="#" class="sort-column" data-column="name" data-order="{{ sortOrder == 'asc' ? 'desc' : 'asc' }}">
+                        Quiz Name
+                    </a>
+                </th>
+                <th>
+                    <a href="#" class="sort-column" data-column="type" data-order="{{ sortOrder == 'asc' ? 'desc' : 'asc' }}">
+                        Quiz Type
+                    </a>
+                </th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for quiz in quizzes %}
+                <tr>
+                    <td class="text-truncate">{{ quiz.name }}</td>
+                    <td class="text-truncate">{{ quiz.type.value }}</td>
+                    <td>
+                        <a href="{{ path('app_quiz_show', {'id': quiz.id}) }}" class="btn btn-info btn-sm">
+                            <i class="mdi mdi-eye"></i> Show
+                        </a>
+                        <a href="{{ path('app_quiz_edit', {'id': quiz.id}) }}" class="btn btn-warning btn-sm">
+                            <i class="mdi mdi-pencil"></i> Edit
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p class="text-center">No quizzes found</p>
+{% endif %}

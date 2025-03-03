@@ -1,0 +1,39 @@
+<table class="table table-hover w-100" style="table-layout: fixed;">
+    <thead class="table-light">
+        <tr>
+            <th>
+                <a href="#" class="sort-link" data-sort="text" data-order="{{ sortOrder == 'asc' ? 'desc' : 'asc' }}">
+                    Question
+                </a>
+            </th>
+            <th>
+                <a href="#" class="sort-link" data-sort="quiz.name" data-order="{{ sortOrder == 'asc' ? 'desc' : 'asc' }}">
+                    Quiz
+                </a>
+            </th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for question in questions %}
+            <tr>
+                <td>{{ question.text }}</td>
+                <td>
+                    <span class="badge badge-info">{{ question.quiz.name }}</span>
+                </td>
+                <td>
+                    <a href="{{ path('app_question_show', {'id': question.id}) }}" class="btn btn-info btn-sm">
+                        <i class="mdi mdi-eye"></i> Show
+                    </a>
+                    <a href="{{ path('app_question_edit', {'id': question.id}) }}" class="btn btn-warning btn-sm">
+                        <i class="mdi mdi-pencil"></i> Edit
+                    </a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="3" class="text-center">No records found</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

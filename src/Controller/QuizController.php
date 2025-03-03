@@ -17,6 +17,8 @@ use Dompdf\Dompdf;
 use Dompdf\Options;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
+use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 
 
@@ -24,19 +26,59 @@ use Symfony\Component\Mime\Email;
 class QuizController extends AbstractController
 {
     #[Route('/', name: 'app_quiz_index', methods: ['GET'])]
-    public function index(Request $request, QuizRepository $quizRepository): Response
+    public function index(Request $request, QuizRepository $quizRepository, PaginatorInterface $paginator): Response
     {
         $searchTerm = $request->query->get('search', '');
-        $sortField = $request->query->get('sort', 'name'); // Default sort by name
-        $sortOrder = $request->query->get('order', 'asc'); // Default order asc
+        $sortField = $request->query->get('sort', 'q.name');
+        $sortOrder = $request->query->get('order', 'asc');
+        $page = max(1, (int) $request->query->get('page', 1));
 
-        $quizzes = $quizRepository->findBySearchAndSort($searchTerm, $sortField, $sortOrder);
+        $query = $quizRepository->findBySearchAndSortQuery($searchTerm, $sortField, $sortOrder);
+        $pagination = $paginator->paginate($query, $page, 2);
 
         return $this->render('quiz/index.html.twig', [
-            'quizzes' => $quizzes,
+            'quizzes' => $pagination,
             'searchTerm' => $searchTerm,
             'sortField' => $sortField,
             'sortOrder' => $sortOrder,
+            'pagination' => [
+                'currentPage' => $pagination->getCurrentPageNumber(),
+                'totalPages' => $pagination->getPageCount(),
+            ]
+        ]);
+    }
+
+    #[Route('/search', name: 'app_quiz_search', methods: ['GET'])]
+    public function search(Request $request, QuizRepository $quizRepository, PaginatorInterface $paginator): JsonResponse
+    {
+        $searchTerm = $request->query->get('search', '');
+        $sortField = $request->query->get('sort', 'q.name');
+        $sortOrder = $request->query->get('order', 'asc');
+        $page = max(1, (int) $request->query->get('page', 1));
+
+        $query = $quizRepository->findBySearchAndSortQuery($searchTerm, $sortField, $sortOrder);
+        $pagination = $paginator->paginate($query, $page, 2);
+
+        return new JsonResponse([
+            'html' => $this->renderView('quiz/_quiz_table.html.twig', [
+                'quizzes' => $pagination,
+                'sortField' => $sortField,
+                'sortOrder' => $sortOrder,
+                'searchTerm' => $searchTerm,
+                'pagination' => [
+                    'currentPage' => $pagination->getCurrentPageNumber(),
+                    'totalPages' => $pagination->getPageCount(),
+                ]
+            ]),
+            'pagination' => $this->renderView('quiz/_pagination.html.twig', [
+                'pagination' => [
+                    'currentPage' => $pagination->getCurrentPageNumber(),
+                    'totalPages' => $pagination->getPageCount(),
+                ],
+                'searchTerm' => $searchTerm,
+                'sortField' => $sortField,
+                'sortOrder' => $sortOrder,
+            ])
         ]);
     }
 
@@ -109,15 +151,28 @@ class QuizController extends AbstractController
         ]);
     }
 
+    #[Route('/front-search', name: 'app_front_quiz_search', methods: ['GET'])]
+    public function frontSearch(Request $request, QuizRepository $quizRepository): Response
+    {
+        $searchTerm = $request->query->get('search', '');
+        $quizzes = $quizRepository->findBySearchTerm($searchTerm);
+
+        // On renvoie un template partiel (par ex. front-quiz/_quiz_list.html.twig)
+        return $this->render('front-quiz/_quiz_list.html.twig', [
+            'quizzes' => $quizzes,
+        ]);
+    }
+
     #[Route('/quiz//{id<\d+>}/take', name: 'app_front_quiz_take')]
     public function takeQuiz(int $id, QuizRepository $quizRepository, SessionInterface $session): Response
     {
         $quiz = $quizRepository->find($id);
     
         if (!$quiz) {
-            throw $this->createNotFoundException('Quiz not found!');
+            throw $this->createNotFoundException('Quiz not found');
         }
     
+        // Get questions
         $questions = $quiz->getQuestions();
         
         if (count($questions) === 0) {
@@ -125,6 +180,7 @@ class QuizController extends AbstractController
             return $this->redirectToRoute('app_front_quiz_index');
         }
     
+        // Store questions in session to track progress
         $session->set('quiz_questions', $questions);
         $session->set('current_question_index', 0);
         $session->set('quiz_id', $quiz->getId());
@@ -135,15 +191,17 @@ class QuizController extends AbstractController
     
 
     #[Route('/quiz/question/{index}', name: 'app_front_quiz_question', defaults: ['index' => 0])]
-    public function showQuestion(SessionInterface $session, Request $request, int $index): Response
+    public function showQuestion(SessionInterface $session, Request $request, int $index, EntityManagerInterface $entityManager): Response
     {
         $questions = $session->get('quiz_questions', []);
 
+        // If quiz is finished, redirect to results page
         if ($index >= count($questions)) {
             return $this->redirectToRoute('app_front_quiz_finish');
         }
 
-        $question = $this->getDoctrine()->getRepository(Question::class)
+        // Use EntityManager to fetch the question with its answers
+        $question = $entityManager->getRepository(Question::class)
             ->createQueryBuilder('q')
             ->leftJoin('q.answers', 'a')
             ->addSelect('a')
@@ -156,10 +214,12 @@ class QuizController extends AbstractController
             throw $this->createNotFoundException('Question not found');
         }
 
+        // Check if answers exist
         if ($question->getAnswers()->count() === 0) {
             throw new \Exception('No answers found for question ID: ' . $question->getId());
         }
 
+        // ✅ Pass the possible answers to the form
         $form = $this->createForm(AnswerTypeFront::class, null, [
             'answers' => $question->getAnswers(),
         ]);
@@ -167,8 +227,10 @@ class QuizController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $selectedAnswers = $form->get('answers')->getData();
-            $correctAnswers = $question->getAnswers()->filter(fn($a) => $a->isIsCorrect()); 
+            $selectedAnswers = $form->get('answers')->getData(); // ✅ Get selected answers
+            $correctAnswers = $question->getAnswers()->filter(fn($a) => $a->isIsCorrect()); // ✅ Get correct answers
+
+            // Compare selected answers with correct ones
             $correctCount = count(array_intersect(
                 array_map(fn($a) => $a->getId(), $selectedAnswers),
                 array_map(fn($a) => $a->getId(), $correctAnswers->toArray())
@@ -178,6 +240,7 @@ class QuizController extends AbstractController
                 $session->set('score', $session->get('score', 0) + 1);
             }
 
+            // Move to next question
             return $this->redirectToRoute('app_front_quiz_question', ['index' => $index + 1]);
         }
 
@@ -185,7 +248,7 @@ class QuizController extends AbstractController
             'question' => $question,
             'form' => $form->createView(),
             'is_last_question' => ($index == count($questions) - 1),
-            'current_index' => $index, 
+            'current_index' => $index, // ✅ Track current index
         ]);
     }
 
@@ -206,7 +269,7 @@ class QuizController extends AbstractController
         $status = ($score >= $passingScore) ? '✅ Congratulations! You passed the quiz.' : '❌ Sorry, you failed the quiz. Try again!';
 
         // Send email notification
-        $recipientEmail = "baklouti.wassim@esprit.tn"; // Change this to your email for testing
+        $recipientEmail = "wassimhamouda456@gmail.com"; // Change this to your email for testing
 
         $email = (new Email())
             ->from('hammoudawassim696@gmail.com') // Change sender

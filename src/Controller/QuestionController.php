@@ -10,24 +10,66 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Knp\Component\Pager\PaginatorInterface;
 
 #[Route('/question')]
 class QuestionController extends AbstractController
 {
     #[Route('/', name: 'app_question_index', methods: ['GET'])]
-    public function index(Request $request, QuestionRepository $questionRepository): Response
+    public function index(Request $request, QuestionRepository $questionRepository, PaginatorInterface $paginator): Response
     {
         $searchTerm = $request->query->get('search', '');
-        $sortField = $request->query->get('sort', 'text'); // Default sort by question text
+        $sortField = $request->query->get('sort', 'q.text');
         $sortOrder = $request->query->get('order', 'asc');
+        $page = max(1, (int) $request->query->get('page', 1));
 
-        $questions = $questionRepository->findBySearchAndSort($searchTerm, $sortField, $sortOrder);
+        $query = $questionRepository->findBySearchAndSortQuery($searchTerm, $sortField, $sortOrder);
+        $pagination = $paginator->paginate($query, $page, 2);
 
         return $this->render('question/index.html.twig', [
-            'questions' => $questions,
+            'questions' => $pagination,
             'searchTerm' => $searchTerm,
             'sortField' => $sortField,
             'sortOrder' => $sortOrder,
+            'pagination' => [
+                'currentPage' => $pagination->getCurrentPageNumber(),
+                'totalPages' => $pagination->getPageCount(),
+            ]
+        ]);
+    }
+
+    #[Route('/search', name: 'app_question_search', methods: ['GET'])]
+    public function search(Request $request, QuestionRepository $questionRepository, PaginatorInterface $paginator): JsonResponse
+    {
+        $searchTerm = $request->query->get('search', '');
+        $sortField = $request->query->get('sort', 'q.text');
+        $sortOrder = $request->query->get('order', 'asc');
+        $page = max(1, (int) $request->query->get('page', 1));
+
+        $query = $questionRepository->findBySearchAndSortQuery($searchTerm, $sortField, $sortOrder);
+        $pagination = $paginator->paginate($query, $page, 2);
+
+        return new JsonResponse([
+            'html' => $this->renderView('question/_question_list.html.twig', [
+                'questions' => $pagination,
+                'sortField' => $sortField,
+                'sortOrder' => $sortOrder,
+                'searchTerm' => $searchTerm,
+                'pagination' => [
+                    'currentPage' => $pagination->getCurrentPageNumber(),
+                    'totalPages' => $pagination->getPageCount(),
+                ]
+            ]),
+            'pagination' => $this->renderView('question/_pagination.html.twig', [
+                'pagination' => [
+                    'currentPage' => $pagination->getCurrentPageNumber(),
+                    'totalPages' => $pagination->getPageCount(),
+                ],
+                'searchTerm' => $searchTerm,
+                'sortField' => $sortField,
+                'sortOrder' => $sortOrder,
+            ])
         ]);
     }
 

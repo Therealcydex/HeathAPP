@@ -57,6 +57,26 @@ class AnswerRepository extends ServiceEntityRepository
         return $queryBuilder->getQuery()->getResult();
     }
 
+    public function findBySearchAndSortQuery(string $searchTerm, string $sortField, string $sortOrder)
+    {
+        $queryBuilder = $this->createQueryBuilder('a')
+            ->leftJoin('a.question', 'q')
+            ->addSelect('q');
+
+        if (!empty($searchTerm)) {
+            $queryBuilder
+                ->where('LOWER(a.text) LIKE LOWER(:searchTerm)')
+                ->orWhere('LOWER(q.text) LIKE LOWER(:searchTerm)')
+                ->setParameter('searchTerm', '%' . $searchTerm . '%');
+        }
+
+        if (in_array($sortField, ['a.text', 'q.text', 'a.isCorrect'])) {
+            $queryBuilder->orderBy($sortField, strtoupper($sortOrder));
+        }
+
+        return $queryBuilder->getQuery();
+    }
+
 
 //    /**
 //     * @return Answer[] Returns an array of Answer objects
