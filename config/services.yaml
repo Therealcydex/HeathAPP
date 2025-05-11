@@ -11,6 +11,12 @@ services:
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+    App\Service\TranslationService:
+        arguments:
+            $apiKey: '%env(AZURE_TRANSLATE_API_KEY)%'
+            $endpoint: '%env(AZURE_TRANSLATE_ENDPOINT)%'
+            $location: '%env(AZURE_TRANSLATE_LOCATION)%'
+
     App\Service\StatsGenerator:
         arguments:
             $commandeRepo: '@App\Repository\CommandeRepository'

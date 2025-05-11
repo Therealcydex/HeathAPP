@@ -1,28 +1,56 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Log in!{% endblock %}
+    </title>
+    <script src="https://kit.fontawesome.com/YOUR_FONTAWESOME_KIT.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
 
-{% block title %}Log in!{% endblock %}
+<div class="min-h-screen flex items-center justify-center bg-gray-100">
+    <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+        {% if error %}
+            <div class="bg-red-100 text-red-700 p-3 rounded mb-4 flex items-center">
+                <i class="fas fa-exclamation-circle mr-2"></i>
+                <span>{{ error.messageKey|trans(error.messageData, 'security') }}</span>
+            </div>
+        {% endif %}
 
-<form method="post">
-    {% if error %}
-        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-    {% endif %}
+        {% if app.user %}
+            <div class="mb-3 text-center text-gray-700">
+                You are logged in as <strong>{{ app.user.userIdentifier }}</strong>,
+                <a href="{{ path('app_logout') }}" class="text-blue-500 hover:underline">Logout</a>
+            </div>
+        {% endif %}
 
-    {% if app.user %}
-        <div class="mb-3">
-            You are logged in as {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Logout</a>
-        </div>
-    {% endif %}
+        <h1 class="text-2xl font-semibold text-center mb-6">Please sign in</h1>
+        <form method="post" class="space-y-4">
+            <div>
+                <label for="inputEmail" class="block text-gray-700">Email</label>
+                <div class="relative">
+                    <i class="fas fa-envelope absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    <input type="email" value="{{ last_username }}" name="email" id="inputEmail" 
+                        class="pl-10 p-2 w-full border rounded-lg focus:ring focus:ring-blue-300" 
+                        autocomplete="email" required autofocus>
+                </div>
+            </div>
 
-    <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
-    <label for="inputEmail">Email</label>
-    <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
-    <label for="inputPassword">Password</label>
-    <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
+            <div>
+                <label for="inputPassword" class="block text-gray-700">Password</label>
+                <div class="relative">
+                    <i class="fas fa-lock absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    <input type="password" name="password" id="inputPassword" 
+                        class="pl-10 p-2 w-full border rounded-lg focus:ring focus:ring-blue-300" 
+                        autocomplete="current-password" required>
+                </div>
+            </div>
 
-    <input type="hidden" name="_csrf_token"
-           value="{{ csrf_token('authenticate') }}"
-    >
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
-    <button class="btn btn-lg btn-primary" type="submit">
-        Sign in
-    </button>
-</form>
+            <button type="submit" 
+                class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 flex items-center justify-center">
+                <i class="fas fa-sign-in-alt mr-2"></i> Sign in
+            </button>
+        </form>
+    </div>
+</div>

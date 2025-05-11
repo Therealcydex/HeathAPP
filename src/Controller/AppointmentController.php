@@ -24,16 +24,17 @@ class AppointmentController extends AbstractController
         $this->entityManager = $entityManager;
         
     }
-    public function someAction(): Response
-    {
-        // Get an instance of Appointment entity from the database
-        $appointment = $this->entityManager->getRepository(Appointment::class)->find(1); // Example of fetching an Appointment
 
-        return new Response('Appointment found: ' . $appointment->getId());
-    }
     #[Route('/book', name: 'book_appointment', methods: ['GET', 'POST'])]
     public function book(Request $request): Response
     {
+    $session = $request->getSession();
+    $googleToken = $session->get('google_token');
+
+    // Redirect to Google Login if user is not authenticated
+    if (!$googleToken) {
+        return $this->redirectToRoute('google_login');
+    }
         $appointment = new Appointment();
         $form = $this->createForm(AppointmentType::class, $appointment);
         $form->handleRequest($request);
@@ -43,7 +44,7 @@ class AppointmentController extends AbstractController
             $this->entityManager->persist($appointment);
             $this->entityManager->flush();
 
-            return $this->redirectToRoute('view_appointments');
+        return $this->redirectToRoute('google_add_event', ['appointmentId' => $appointment->getId()]);
         }
 
         return $this->render('appointment/book.html.twig', [
@@ -58,15 +59,70 @@ class AppointmentController extends AbstractController
     }
 
     #[Route('/view', name: 'view_appointments', methods: ['GET'])]
-    public function viewAppointments(): Response
+    public function viewAppointments(Request $request): Response
     {
-        // Fetch appointments with their prescriptions
-        $appointments = $this->entityManager->getRepository(Appointment::class)->findAll();
-
+        $searchTerm = $request->query->get('search', '');
+        $page = max(1, $request->query->getInt('page', 1)); 
+        $limit = 4;
+    
+        $appointmentRepository = $this->entityManager->getRepository(Appointment::class);
+    
+        // If a search term exists, return all matching appointments (ignoring pagination)
+        if (!empty($searchTerm)) {
+            $appointments = $appointmentRepository->createQueryBuilder('a')
+                ->leftJoin('a.doctor', 'd')
+                ->where('a.clientName LIKE :search OR d.name LIKE :search')
+                ->setParameter('search', '%' . $searchTerm . '%')
+                ->orderBy('a.appointmentDate', 'ASC')
+                ->getQuery()
+                ->getResult();
+    
+            return $this->json([
+                'appointments' => array_map(fn($appointment) => [
+                    'id' => $appointment->getId(),
+                    'clientName' => $appointment->getClientName(),
+                    'doctorName' => $appointment->getDoctor() ? $appointment->getDoctor()->getName() : 'No Doctor Assigned',
+                    'appointmentDate' => $appointment->getAppointmentDate() ? $appointment->getAppointmentDate()->format('Y-m-d') : 'N/A',
+                    'prescriptions' => array_map(fn($p) => ['id' => $p->getId()], $appointment->getPrescriptions()->toArray()),
+                ], $appointments),
+            ]);
+        }
+    
+        // Default paginated appointments when no search
+        $totalAppointments = $appointmentRepository->count([]);
+        $appointments = $appointmentRepository->findBy([], ['appointmentDate' => 'ASC'], $limit, ($page - 1) * $limit);
+    
         return $this->render('appointment/view_appointments.html.twig', [
             'appointments' => $appointments,
+            'currentPage' => $page,
+            'totalPages' => ceil($totalAppointments / $limit),
         ]);
     }
+    #[Route('/search', name: 'search_appointments', methods: ['GET'])]
+public function searchAppointments(Request $request): Response
+{
+    $query = $request->query->get('q'); // Get the search query from the request
+
+    $appointments = $this->entityManager->getRepository(Appointment::class)
+        ->createQueryBuilder('a')
+        ->where('a.clientName LIKE :query')
+        ->setParameter('query', '%' . $query . '%')
+        ->setMaxResults(10)
+        ->getQuery()
+        ->getResult();
+
+    $results = [];
+    foreach ($appointments as $appointment) {
+        $results[] = [
+            'id' => $appointment->getId(),
+            'clientName' => $appointment->getClientName(),
+            'doctor' => $appointment->getDoctor() ? $appointment->getDoctor()->getName() : 'No Doctor Assigned',
+            'date' => $appointment->getAppointmentDate()?->format('Y-m-d'),
+        ];
+    }
+
+    return $this->json($results);
+}
 
     #[Route('/{id}/show', name: 'app_appointment_show', methods: ['GET'])]
     public function show(Appointment $appointment): Response

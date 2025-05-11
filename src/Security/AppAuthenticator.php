@@ -47,13 +47,19 @@ class AppAuthenticator extends AbstractLoginFormAuthenticator implements Authent
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
-        if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
+        $targetPath = $this->getTargetPath($request->getSession(), $firewallName);
+    
+        // If the target path is not set, redirect to a default page
+        if ($targetPath) {
             return new RedirectResponse($targetPath);
         }
-
-        return new RedirectResponse($this->urlGenerator->generate('app_appointment_index'));
-        throw new \Exception('TODO: provide a valid redirect inside '.__FILE__);
+    
+        // Fallback route if no target path is found
+        return new RedirectResponse($this->urlGenerator->generate('app_dossier_medical_index')); // Adjust this route if necessary
     }
+    
+    
+    
 
     protected function getLoginUrl(Request $request): string
     {

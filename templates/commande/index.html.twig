@@ -10,6 +10,10 @@
                 <a href="{{ path('app_commande_new') }}" class="btn btn-gradient-primary float-right"><i class="mdi mdi-plus"></i> Create New Command</a>
             </div>
 
+            <br>
+            <input type="text" class="form-control" id="searchInput" placeholder="Search&hellip;"> 
+            <br>
+
             <div class="table-responsive mt-4">
                 <table class="table table-hover w-100">
                     <thead class="table-light">
@@ -30,6 +34,7 @@
                                     <a class="btn btn-sm btn-outline-warning" href="{{ path('app_commande_show', {'id': commande.id}) }}">Show</a>
                                     <a class="btn btn-sm btn-outline-success" href="{{ path('app_commande_edit', {'id': commande.id}) }}">Edit</a>
                                     {{ include('commande/_delete_form.html.twig') }}
+                                    <a style="margin-top:-47px;margin-left:200px;" class="btn btn-sm btn-outline-info" href="{{ path('app_commande_pdf', {'id': commande.id}) }}" > Export </a>
                                 </td>
                             </tr>
                         {% else %}
@@ -43,5 +48,25 @@
         </div>
     </div>
 
+
+    <script>
+        function filterTable() {
+            const filter = document.getElementById('searchInput').value.toUpperCase();
+            const rows = document.querySelectorAll('table tr');
+            for (let i = 1; i < rows.length; i++) {
+                const cols = rows[i].querySelectorAll('td');
+                let visible = false;
+                for (let j = 0; j < cols.length; j++) {
+                    const cell = cols[j];
+                    if (cell.innerText.toUpperCase().indexOf(filter) > -1) {
+                        visible = true;
+                        break;
+                    }
+                }
+                rows[i].style.display = visible ? '' : 'none';
+            }
+        }
+        document.getElementById('searchInput').addEventListener('keyup', filterTable);
+	</script>
     
 {% endblock %}

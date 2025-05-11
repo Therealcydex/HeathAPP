@@ -1,0 +1,107 @@
+{% block body %}
+    <div style="max-width: 600px; margin: 30px auto; padding: 20px; background-color: #f9f9f9; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+        <h1 style="font-size: 2em; text-align: center; color: #007bff; margin-bottom: 20px;">Book an Appointment</h1>
+
+        {# Show Flash Message if there is an error #}
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        {{ form_start(form) }}
+            <div style="margin-bottom: 15px;">
+                {{ form_row(form.clientName, { 'attr': { 'class': 'form-control' } }) }}
+                {% if form.clientName.vars.errors|length > 0 %}
+                    <div class="invalid-feedback">
+                        {{ form_errors(form.clientName) }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label for="appointment_doctor" class="form-label">Select Doctor</label>
+                
+                <div class="custom-select">
+                    <select id="appointment_doctor" name="appointment[doctor]" class="form-control">
+                        {% for doctor in doctors|sort((a, b) => b.getAverageRating() <=> a.getAverageRating()) %}
+                            <option value="{{ doctor.id }}">
+                                {{ doctor.name }} - ⭐ {{ doctor.getAverageRating() }}/5
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                {% if form.doctor.vars.errors|length > 0 %}
+                    <div class="invalid-feedback">
+                        {{ form_errors(form.doctor) }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                {{ form_row(form.appointmentDate, { 'attr': { 'class': 'form-control' } }) }}
+                {% if form.appointmentDate.vars.errors|length > 0 %}
+                    <div class="invalid-feedback">
+                        {{ form_errors(form.appointmentDate) }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="btn" style="width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 1.1em; transition: background-color 0.3s;">
+                Book Appointment
+            </button>
+        {{ form_end(form) }}
+
+        <div style="margin-top: 20px; text-align: center;">
+            <a href="{{ path('view_appointments') }}" style="color: #007bff; font-weight: bold; text-decoration: none; font-size: 1.1em; transition: color 0.3s;">
+                View Your Appointments
+            </a>
+        </div>
+    </div>
+
+    <style>
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 1em;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+
+        .form-control:focus {
+            outline-color: #007bff;
+        }
+
+        /* Button style */
+        .btn {
+            font-size: 1.1em;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        .invalid-feedback {
+            color: red;
+            font-size: 0.9em;
+        }
+
+        .alert-danger {
+            color: red;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+    </style>
+{% endblock %}

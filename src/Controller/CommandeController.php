@@ -13,6 +13,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use DateTime;
+use Twilio\Rest\Client;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 #[Route('/commande')]
 class CommandeController extends AbstractController
@@ -47,17 +50,30 @@ class CommandeController extends AbstractController
 
 
     #[Route('/newFront/{id}', name: 'app_commande_new_front', methods: ['GET', 'POST'])]
-    public function newFront(Request $request, CommandeRepository $cr, ProduitRepository $pr, Produit $produit): Response
+    public function newFront(Request $request, CommandeRepository $cr, ProduitRepository $pr, Produit $produit): Response 
     {
+        $sid = $_ENV['TWILIO_ACCOUNT_SID'];
+        $token = $_ENV['TWILIO_AUTH_TOKEN'];
+        $twilioClient = new Client($sid, $token);
+    
         $commande = new Commande();
         $commande->setDate(new DateTime());
         $commande->setStatut("En Attente");
         $commande->setTotale($produit->getPrix());
         $commande->setProduits($produit);
-
-        $cr->save($commande,true);
-
-
+    
+        $cr->save($commande, true);
+    
+        $toNumber = '+21626061821';
+        $fromNumber = $_ENV['TWILIO_FROM_NUMBER'];
+        $message = $twilioClient->messages->create(
+            $toNumber,
+            [
+                'from' => $fromNumber,
+                'body' => 'Votre commande a été ajoutée avec succès. Veuillez consulter l\'espace client. Merci pour votre fidélité!',
+            ]
+        );
+    
         return $this->redirectToRoute('app_produit_index_front', [], Response::HTTP_SEE_OTHER);
     }
 
@@ -96,5 +112,39 @@ class CommandeController extends AbstractController
         }
 
         return $this->redirectToRoute('app_commande_index', [], Response::HTTP_SEE_OTHER);
+    }
+    #[Route('/{id}/pdf', name: 'app_commande_pdf', methods: ['GET'])]     
+    public function AfficheTicketPDF(CommandeRepository $repo, $id)
+    {
+        $pdfoptions = new Options();
+        $pdfoptions->set('defaultFont', 'Arial');
+        $pdfoptions->setIsRemoteEnabled(true);
+        
+
+        $dompdf = new Dompdf($pdfoptions);
+
+        $commandes = $repo->find($id);
+
+        // Check if the commande exists
+        if (!$commandes) {
+            throw $this->createNotFoundException('Your commande does not exist');
+        }
+
+        $html = $this->renderView('commande/pdfExport.html.twig', [
+            'commande' => $commandes
+        ]);
+
+        $html = '<div>' . $html . '</div>';
+
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A6', 'landscape');
+        $dompdf->render();
+
+        $pdfOutput = $dompdf->output();
+
+        return new Response($pdfOutput, Response::HTTP_OK, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="cabinetPDF.pdf"'
+        ]);
     }
 }

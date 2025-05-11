@@ -45,9 +45,9 @@ class RegistrationController extends AbstractController
 
             // Redirect based on role
             if ($role === User::ROLE_PATIENT) {
-                return $this->redirectToRoute('app_analyse_index');
+                return $this->redirectToRoute('app_login');
             } else {
-                return $this->redirectToRoute('app_analyse_index');
+                return $this->redirectToRoute('app_login');
             }
         }
 

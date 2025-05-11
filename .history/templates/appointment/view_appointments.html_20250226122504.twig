@@ -1,0 +1,96 @@
+{% extends 'base-front.html.twig' %}
+
+{% block title %}View Appointments{% endblock %}
+
+{% block body %}
+    <h1 style="font-size: 2em; font-weight: bold; margin-bottom: 20px; color: #333;">Your Appointments</h1>
+
+    <!-- Search Bar -->
+    <input type="text" id="search" placeholder="Search appointments by name..." 
+           style="width: 100%; padding: 10px; margin-bottom: 20px; border-radius: 5px; border: 1px solid #ddd; font-size: 1.1em;">
+    <div id="searchResults" style="border: 1px solid #ddd; display: none; background: white; padding: 10px;"></div>
+
+    <!-- Appointments List -->
+    <div id="appointmentsContainer" style="display: flex; flex-direction: column; gap: 20px; margin-bottom: 30px;">
+        {% for appointment in appointments %}
+            <div class="appointment-card" data-name="{{ appointment.clientName }}">
+                <div style="background-color: #fff; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); padding: 20px; width: 33%; margin: 0 auto;">
+                    <h3 style="font-size: 1.5em; color: #007bff; margin-bottom: 10px;">
+                        {{ appointment.clientName }} - 
+                        {% if appointment.doctor %}
+                            {{ appointment.doctor.name }}
+                        {% else %}
+                            No Doctor Assigned
+                        {% endif %}
+                    </h3>
+                    <p style="font-size: 1.1em; margin-bottom: 10px;">Appointment Date: <strong>{{ appointment.appointmentDate ? appointment.appointmentDate|date('Y-m-d') : 'N/A' }}</strong></p>
+                </div>
+            </div>
+        {% else %}
+            <p style="color: #888; text-align: center;" id="noResults">No appointments available.</p>
+        {% endfor %}
+    </div>
+
+    <!-- JavaScript for Live Search -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('search');
+            const searchResults = document.getElementById('searchResults');
+            const appointmentsContainer = document.getElementById('appointmentsContainer');
+            const noResults = document.getElementById('noResults');
+
+            searchInput.addEventListener('input', function() {
+                let query = this.value.trim();
+                if (query.length === 0) {
+                    searchResults.style.display = 'none';
+                    return;
+                }
+
+                fetch(`/appointment/search?q=${query}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        searchResults.innerHTML = "";
+                        if (data.length === 0) {
+                            searchResults.innerHTML = "<p style='color: gray;'>No results found</p>";
+                        } else {
+                            data.forEach(item => {
+                                let div = document.createElement('div');
+                                div.textContent = `${item.clientName} - ${item.doctor} (${item.date})`;
+                                div.style.padding = "10px";
+                                div.style.cursor = "pointer";
+                                div.style.borderBottom = "1px solid #ddd";
+
+                                div.addEventListener('click', function() {
+                                    searchInput.value = item.clientName;
+                                    searchResults.style.display = 'none';
+
+                                    // Show only the matching appointment
+                                    let appointments = document.querySelectorAll('.appointment-card');
+                                    appointments.forEach(app => {
+                                        if (app.getAttribute('data-name').toLowerCase().includes(item.clientName.toLowerCase())) {
+                                            app.style.display = 'block';
+                                        } else {
+                                            app.style.display = 'none';
+                                        }
+                                    });
+
+                                    noResults.style.display = 'none';
+                                });
+
+                                searchResults.appendChild(div);
+                            });
+                        }
+                        searchResults.style.display = "block";
+                    })
+                    .catch(error => console.error('Error:', error));
+            });
+
+            document.addEventListener('click', function(event) {
+                if (!searchResults.contains(event.target) && event.target !== searchInput) {
+                    searchResults.style.display = 'none';
+                }
+            });
+        });
+    </script>
+
+{% endblock %}

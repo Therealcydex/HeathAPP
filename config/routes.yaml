@@ -28,3 +28,5 @@ app_dossier_medical_delete:
     path: /dossier-medical/{id}
     controller: App\Controller\DossierMedicalController::delete
     methods: POST
+app_logout:
+    path: /logout

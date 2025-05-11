@@ -1,0 +1,165 @@
+{% extends 'base.html.twig' %}
+
+            {% block title %}{{ post.title }}{% endblock %}
+
+            {% block body %}
+                <style>
+                    dl, ol, ul {
+                        margin-top: 0;
+                        margin-bottom: 0;
+                        color: tomato;
+                    }
+                    .fa-edit:before, .fa-pencil-square-o:before {
+                        content: "\f044";
+                        color: #1d82e5;
+                    }
+                    .fa-trash-alt:before, .fa-trash-can:before {
+                        content: "\f2ed";
+                        color: red;
+                    }
+                    .h-full {
+                        height: auto;
+                    }
+                    .menu {
+                        position: relative;
+                        display: inline-block;
+                    }
+                    .menu-content {
+                        display: none;
+                        position: absolute;
+                        right: 0;
+                        background-color: white;
+                        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+                        z-index: 1;
+                    }
+                    .menu-content a {
+                        color: black;
+                        padding: 12px 16px;
+                        text-decoration: none;
+                        display: block;
+                    }
+                    .menu-content a:hover {
+                        background-color: #f1f1f1;
+                    }
+                    .menu-content a.delete {
+                        color: red;
+                    }
+                    .menu-content a.update {
+                        color: green;
+                    }
+                    .menu:hover .menu-content {
+                        display: block;
+                    }
+                    .menu span {
+                        font-size: 24px;
+                        opacity: 0.5;
+                        transition: opacity 0.3s;
+                    }
+                    .menu:hover span {
+                        opacity: 1;
+                    }
+                </style>
+                <script src="https://cdn.tailwindcss.com"></script>
+                <body class="bg-white text-[#176abc] h-screen overflow-y-auto">
+                <div class="container mx-auto p-6 w-full h-full relative">
+                    <div class="flex justify-between items-center mb-6">
+                        <h1 class="text-3xl font-bold">{{ post.title }}</h1>
+                    </div>
+
+                    <div class="border p-4 rounded-lg shadow bg-gray-100">
+                        <p class="text-gray-700">{{ post.content }}</p>
+                        <div class="flex items-center space-x-2">
+                            <p class="text-gray-500 text-sm">Posted by: <strong>{{ post.author.name }} {{ post.author.lastname }}</strong></p>
+                            <span class="text-xs px-2 py-1 bg-blue-500 text-white rounded-full">{{ post.author.role }}</span>
+                        </div>
+                        <p class="text-gray-500 text-sm">Posted on: {{ post.createdAt|date_modify('+1 hour')|date('l, d F H:i') }}</p>
+                    </div>
+
+                    <h2 class="text-2xl font-bold mt-6">Comments</h2>
+                    <div class="space-y-4">
+                        {% if comments is empty %}
+                            <p class="text-gray-500">No comments yet.</p>
+                        {% else %}
+                        {% endif %}
+                        {% for comment in comments %}
+                            <div class="border p-4 rounded-lg shadow bg-gray-100 relative">
+                                <!-- Comment Content -->
+                                <p class="text-gray-700" id="comment-content-{{ comment.id }}">{{ comment.content }}</p>
+
+                                <!-- Translate Buttons -->
+                                <div class="mt-2 space-x-2">
+                                    <button onclick="translateComment({{ comment.id }}, 'fr')" class="text-blue-500 hover:text-blue-700">
+                                        Translate to French
+                                    </button>
+                                    <button onclick="translateComment({{ comment.id }}, 'ar')" class="text-blue-500 hover:text-blue-700">
+                                        Translate to Arabic
+                                    </button>
+                                </div>
+
+                                <!-- Comment Metadata -->
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center space-x-2">
+                                        <p class="text-gray-500 text-sm">Commented by: <strong>{{ comment.idUser.name }} {{ comment.idUser.lastname }}</strong></p>
+                                        <span class="text-xs px-2 py-1 bg-blue-500 text-white rounded-full">{{ comment.idUser.role }}</span>
+                                    </div>
+                                    <div class="menu">
+                                        <div class="flex space-x-2">
+                                            <a href="{{ path('comment_edit', {'id': comment.id}) }}" class="text-green-500 hover:text-green-700">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="{{ path('comment_delete', {'id': comment.id}) }}" class="text-red-500 hover:text-red-700">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="text-gray-500 text-sm">Commented on: {{ comment.createdAt|date_modify('+1 hour')|date('l, d F H:i') }}</p>
+                            </div>
+                        {% endfor %}                    </div>
+                    <h2 class="text-2xl font-bold mt-6">Add a Comment</h2>
+                    {{ form_start(form, {'attr': {'class': 'space-y-4', 'novalidate': 'novalidate'}}) }}
+                    <div>
+                        {{ form_widget(form.content, {'attr': {'class': 'w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#176abc]'}}) }}
+                        <p class="text-red-500 text-sm">{{ form_errors(form.content) }}</p>
+                    </div>
+                    <div class="flex justify-center space-x-4 mt-4">
+                        <button type="submit" class="bg-[#176abc] text-white px-4 py-2 rounded-lg hover:bg-[#135a97]">Submit</button>
+                    </div>
+                    {{ form_end(form) }}
+                </div>
+                <script>
+                    async function translateComment(commentId, targetLanguage) {
+                        const commentContentElement = document.getElementById(`comment-content-${commentId}`);
+                        const commentContent = commentContentElement.innerText;
+
+                        try {
+                            const response = await fetch('/translate', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    texts: [commentContent], // Send the comment content
+                                    targetLanguage: targetLanguage,
+                                }),
+                            });
+
+                            const data = await response.json();
+                            console.log('API Response:', data); // Log the response for debugging
+
+                            // Ensure the response has the expected structure
+                            if (data.translatedTexts && data.translatedTexts.length === 1) {
+                                const translatedContent = data.translatedTexts[0];
+
+                                // Update the comment content with the translated text
+                                commentContentElement.innerText = translatedContent;
+                            } else {
+                                console.error('Unexpected API response structure:', data);
+                            }
+                        } catch (error) {
+                            console.error('Translation failed:', error);
+                        }
+                    }
+                </script>
+                </body>
+            {% endblock %}

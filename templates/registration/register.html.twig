@@ -1,24 +1,57 @@
 
-{% block title %}Register{% endblock %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Register{% endblock %}</title>
+    <script src="https://kit.fontawesome.com/YOUR_FONTAWESOME_KIT.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
 
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <h1 class="text-center mb-4">Register</h1>
+<div class="flex min-h-screen items-center justify-center bg-gray-100">
+    <div class="w-full max-w-md bg-white p-8 shadow-md rounded-lg">
+        <h1 class="text-2xl font-semibold text-center mb-6">
+            <i class="fas fa-user-plus"></i> Register
+        </h1>
 
-                {{ form_start(registrationForm) }}
-                    {{ form_row(registrationForm.email, {
-                        'attr': {'class': 'form-control mb-3'}
-                    }) }}
-                    {{ form_row(registrationForm.plainPassword, {
-                        'attr': {'class': 'form-control mb-3'}
-                    }) }}
-                    {{ form_row(registrationForm.role, {
-                        'attr': {'class': 'form-control mb-3'}
-                    }) }}
+        {{ form_start(registrationForm, { 'attr': {'class': 'space-y-4'} }) }}
 
-                    <button type="submit" class="btn btn-primary w-100">Register</button>
-                {{ form_end(registrationForm) }}
+            <div>
+                <label for="{{ registrationForm.email.vars.id }}" class="block text-gray-700 font-medium">
+                    <i class="fas fa-envelope"></i> Email
+                </label>
+                {{ form_widget(registrationForm.email, { 'attr': {
+                    'class': 'w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500',
+                    'placeholder': 'Enter your email'
+                }}) }}
+                {{ form_errors(registrationForm.email) }}
             </div>
-        </div>
+
+            <div>
+                <label for="{{ registrationForm.plainPassword.vars.id }}" class="block text-gray-700 font-medium">
+                    <i class="fas fa-lock"></i> Password
+                </label>
+                {{ form_widget(registrationForm.plainPassword, { 'attr': {
+                    'class': 'w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500',
+                    'placeholder': 'Enter your password'
+                }}) }}
+                {{ form_errors(registrationForm.plainPassword) }}
+            </div>
+
+            <div>
+                <label for="{{ registrationForm.role.vars.id }}" class="block text-gray-700 font-medium">
+                    <i class="fas fa-user-tag"></i> Role
+                </label>
+                {{ form_widget(registrationForm.role, { 'attr': {
+                    'class': 'w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
+                }}) }}
+                {{ form_errors(registrationForm.role) }}
+            </div>
+
+            <button type="submit"
+                    class="w-full p-3 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition">
+                <i class="fas fa-user-plus"></i> Register
+            </button>
+
+        {{ form_end(registrationForm) }}
     </div>
+</div>

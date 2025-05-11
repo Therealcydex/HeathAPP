@@ -1,0 +1,229 @@
+{% extends 'base_back.html.twig' %}
+
+{% block title %}Back Office - Posts{% endblock %}
+
+{% block body %}
+    <style>
+
+        tr {
+            background-color: white !important;
+            color: black !important;
+            border-bottom: 1px solid #ddd !important;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        tr:hover {
+            background-color: #f3f3f3 !important;
+        }
+
+        /* Styled buttons */
+        .btn {
+            display: inline-block;
+            padding: 10px 16px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, transform 0.1s;
+            border: none;
+            outline: none;
+        }
+
+
+        .btn-show {
+            background-color: #007bff !important;
+            color: white !important;
+        }
+
+        .btn-show:hover {
+            background-color: #0056b3 !important;
+            transform: scale(1.05);
+        }
+
+        /* Red "Delete Post" button */
+        .btn-delete {
+            background-color: #dc3545 !important;
+            color: white !important;
+        }
+
+        .btn-delete:hover {
+            background-color: #a71d2a !important;
+            transform: scale(1.05);
+        }
+
+
+
+    .search-filter-container {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .search-bar {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .filter-menu {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-menu select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: white;
+            cursor: pointer;
+        }
+    </style>
+
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-bold mb-6 text-gray-800">All Posts</h1>
+
+        <!-- Search Bar and Filter Menu -->
+        <div class="search-filter-container">
+            <!-- Search Bar -->
+            <input
+                    type="text"
+                    id="search-bar"
+                    class="search-bar"
+                    placeholder="Search by author, title, or content..."
+                    oninput="filterTable()"
+            />
+
+            <!-- Filter Menu -->
+            <div class="filter-menu">
+                <select id="sort-by" onchange="filterTable()">
+                    <option value="">Sort by...</option>
+                    <option value="newest">Newest</option>
+                    <option value="oldest">Oldest</option>
+                    <option value="most-comments">Most Comments</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="w-full overflow-x-auto bg-white shadow-lg rounded-lg p-4" style="margin-left: -4%;
+    width: 109%;">
+            <table class="w-full border border-gray-300 rounded-lg overflow-hidden" id="posts-table">
+                <thead class="bg-gray-700 text-white">
+                <tr class="!text-black !bg-gray-800 !text-white">
+                    <th class="py-3 px-5 text-left border border-gray-300 rounded-tl-lg">ID</th>
+                    <th class="py-3 px-5 text-left border border-gray-300">Date Created</th>
+                    <th class="py-3 px-5 text-left border border-gray-300">Author</th>
+                    <th class="py-3 px-5 text-left border border-gray-300">Title</th>
+                    <th class="py-3 px-5 text-left border border-gray-300">Content</th>
+                    <th class="py-3 px-5 text-left border border-gray-300">Comments</th>
+                    <th class="py-3 px-5 text-center border border-gray-300 rounded-tr-lg">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for post in posts %}
+                    <tr class="!text-black !border-b hover:!bg-gray-100 transition" data-author="{{ post.author.name }} {{ post.author.lastname }}" data-title="{{ post.title }}" data-content="{{ post.content }}" data-date="{{ post.createdAt|date('Y-m-d H:i') }}" data-comments="{{ post.commentCount }}">
+                        <td class="py-3 px-5 border border-gray-300">{{ post.id }}</td>
+                        <td class="py-4 px-5 text-gray-600 border border-gray-300 whitespace-nowrap min-w-[150px] overflow-hidden text-ellipsis">{{ post.createdAt|date('Y-m-d H:i') }}</td>
+                        <td class="py-3 px-5 font-semibold text-gray-700 border border-gray-300">{{ post.author.name }} {{ post.author.lastname }}</td>
+                        <td class="py-3 px-5 font-semibold text-blue-700 border border-gray-300">{{ post.title }}</td>
+                        <td class="py-3 px-5 text-gray-600 border border-gray-300">{{ post.content }}</td>
+                        <td class="py-1 px-5 text-gray-600 border border-gray-300">{{ post.commentCount }}</td>
+                        <td class="py-3 px-5 text-center">
+                            <div class="flex flex-col space-y-2"> <!-- Stack buttons vertically -->
+                                <button onclick="window.location.href='{{ path('comment_list', {'id': post.id}) }}'" class="btn btn-show">
+                                    Show Comments
+                                </button>
+                                <button onclick="window.location.href='{{ path('post_back_delete', {'id': post.id}) }}'" class="btn btn-delete">
+                                    Delete Post
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% include 'pagerfanta/tailwind_pagination.html.twig' with {
+            'pager': posts,
+            'route': 'backoffice_posts',
+            'query': query,
+            'pageParameterName': 'page'
+        } %}
+    </div>
+
+    <script>
+        function filterTableBackoffice() {
+            const searchQuery = document.getElementById('search-bar').value.toLowerCase();
+            const sortBy = document.getElementById('sort-by').value;
+
+            // Send AJAX request to the backend
+            fetch('/filter-posts-backoffice', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    search: searchQuery,
+                    sortBy: sortBy,
+                    page: 1, // Default to page 1
+                    limit: 7, // Default to 7 posts per page
+                }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // Update the table with the new data
+                    const tbody = document.querySelector('#posts-table tbody');
+                    tbody.innerHTML = '';
+
+                    data.posts.forEach(post => {
+                        const row = document.createElement('tr');
+                        row.setAttribute('data-author', `${post.author.name} ${post.author.lastname}`);
+                        row.setAttribute('data-title', post.title);
+                        row.setAttribute('data-content', post.content);
+                        row.setAttribute('data-date', post.createdAt);
+                        row.setAttribute('data-comments', post.commentCount);
+
+                        row.innerHTML = `
+                <td class="py-3 px-5 border border-gray-300">${post.id}</td>
+                <td class="py-4 px-5 text-gray-600 border border-gray-300 whitespace-nowrap min-w-[150px] overflow-hidden text-ellipsis">${post.createdAt}</td>
+                <td class="py-3 px-5 font-semibold text-gray-700 border border-gray-300">${post.author.name} ${post.author.lastname}</td>
+                <td class="py-3 px-5 font-semibold text-blue-700 border border-gray-300">${post.title}</td>
+                <td class="py-3 px-5 text-gray-600 border border-gray-300">${post.content}</td>
+                <td class="py-1 px-5 text-gray-600 border border-gray-300">${post.commentCount}</td>
+                <td class="py-3 px-5 text-center">
+                    <div class="flex flex-col space-y-2">
+                        <button onclick="window.location.href='/comment-list/${post.id}'" class="btn btn-show">
+                            Show Comments
+                        </button>
+                        <button onclick="window.location.href='/post-back-delete/${post.id}'" class="btn btn-delete">
+                            Delete Post
+                        </button>
+                    </div>
+                </td>
+            `;
+
+                        tbody.appendChild(row);
+                    });
+
+                    // Update pagination
+                    const paginationContainer = document.querySelector('.pagination-container');
+                    if (paginationContainer) {
+                        paginationContainer.innerHTML = data.pagination;
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // Attach the function to the search bar and filter menu
+        document.getElementById('search-bar').addEventListener('input', filterTableBackoffice);
+        document.getElementById('sort-by').addEventListener('change', filterTableBackoffice);
+
+    </script>
+{% endblock %}

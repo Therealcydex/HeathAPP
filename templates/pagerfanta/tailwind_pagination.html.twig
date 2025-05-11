@@ -1,0 +1,23 @@
+{# templates/pagerfanta/tailwind_pagination.html.twig #}
+
+{% if pager.haveToPaginate() %}
+    <div class="flex justify-center items-center space-x-2">
+        {% if pager.hasPreviousPage() %}
+            <a href="{{ path(route, query|merge({(pageParameterName): pager.previousPage})) }}" class="px-4 py-2 bg-gray-200 text-gray-700 hover:bg-gray-300 rounded transition duration-300">
+                Previous
+            </a>
+        {% endif %}
+
+        {% for page in 1..pager.nbPages %}
+            <a href="{{ path(route, query|merge({(pageParameterName): page})) }}" class="px-4 py-2 {{ page == pager.currentPage ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300' }} rounded transition duration-300">
+                {{ page }}
+            </a>
+        {% endfor %}
+
+        {% if pager.hasNextPage() %}
+            <a href="{{ path(route, query|merge({(pageParameterName): pager.nextPage})) }}" class="px-4 py-2 bg-gray-200 text-gray-700 hover:bg-gray-300 rounded transition duration-300">
+                Next
+            </a>
+        {% endif %}
+    </div>
+{% endif %}

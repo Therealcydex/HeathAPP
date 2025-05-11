@@ -1,0 +1,201 @@
+{% extends 'base_back.html.twig' %}
+
+{% block title %}Back Office - Comments{% endblock %}
+
+{% block body %}
+    <style>
+
+        tr {
+            background-color: white !important;
+            color: black !important;
+            border-bottom: 1px solid #ddd !important;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        tr:hover {
+            background-color: #f3f3f3 !important;
+        }
+
+
+        .btn {
+            display: inline-block;
+            padding: 10px 16px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, transform 0.1s;
+            border: none;
+            outline: none;
+        }
+
+
+        .btn-show {
+            background-color: #007bff !important;
+            color: white !important;
+        }
+
+        .btn-show:hover {
+            background-color: #0056b3 !important;
+            transform: scale(1.05);
+        }
+
+
+        .btn-delete {
+            background-color: #dc3545 !important;
+            color: white !important;
+        }
+
+        .btn-delete:hover {
+            background-color: #a71d2a !important;
+            transform: scale(1.05);
+        }
+
+
+
+    /* Search bar and filter menu styles */
+        .search-filter-container {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .search-bar {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .filter-menu {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-menu select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: white;
+            cursor: pointer;
+        }
+    </style>
+
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-bold mb-6 text-gray-800">{{ post.title }}</h1>
+
+        <!-- Search Bar and Filter Menu -->
+        <div class="search-filter-container">
+            <!-- Search Bar -->
+            <input
+                    type="text"
+                    id="search-bar"
+                    class="search-bar"
+                    placeholder="Search by user name or content..."
+                    oninput="filterTable()"
+            />
+
+            <!-- Filter Menu -->
+            <div class="filter-menu">
+                <select id="sort-by" onchange="filterTable()">
+                    <option value="">Sort by...</option>
+                    <option value="newest">Newest</option>
+                    <option value="oldest">Oldest</option>
+                </select>
+            </div>
+        </div>
+
+        {% if comments is empty %}
+            <p class="text-gray-600">No comments yet.</p>
+        {% else %}
+            <div class="w-full overflow-x-auto bg-white shadow-lg rounded-lg p-4">
+                <table class="w-full border border-gray-300 rounded-lg overflow-hidden" id="comments-table">
+                    <thead class="bg-gray-700 text-white">
+                    <tr class="!text-black !bg-gray-800 !text-white">
+                        <th class="py-3 px-5 text-left border border-gray-300 rounded-tl-lg">User Name</th>
+                        <th class="py-3 px-5 text-left border border-gray-300">Date Created</th>
+                        <th class="py-3 px-5 text-left border border-gray-300">Content</th>
+                        <th class="py-3 px-5 text-center border border-gray-300 rounded-tr-lg">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for comment in comments %}
+                        <tr class="!text-black !border-b hover:!bg-gray-100 transition" data-user="{{ comment.idUser.name }} {{ comment.idUser.lastname }}" data-content="{{ comment.content }}" data-date="{{ comment.createdAt|date('Y-m-d H:i') }}">
+                            <td class="py-3 px-5 font-semibold text-gray-700 border border-gray-300">{{ comment.idUser.name }} {{ comment.idUser.lastname }}</td>
+                            <td class="py-3 px-5 text-gray-600 border border-gray-300">{{ comment.createdAt|date('Y-m-d H:i') }}</td>
+                            <td class="py-3 px-5 text-gray-600 border border-gray-300">{{ comment.content }}</td>
+                            <td class="py-3 px-5 text-center">
+                                <button onclick="window.location.href='{{ path('comment_back_delete', {'id': comment.id}) }}'" class="btn btn-delete">
+                                    Delete Comment
+                                </button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function filterCommentsTableBackoffice() {
+            const searchQuery = document.getElementById('search-bar').value.toLowerCase();
+            const sortBy = document.getElementById('sort-by').value;
+
+            // Send AJAX request to the backend
+            fetch('/filter-comments-backoffice', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    search: searchQuery,
+                    sortBy: sortBy,
+                    page: 1, // Default to page 1
+                    limit: 7, // Default to 7 comments per page
+                }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // Update the table with the new data
+                    const tbody = document.querySelector('#comments-table tbody');
+                    tbody.innerHTML = '';
+
+                    data.comments.forEach(comment => {
+                        const row = document.createElement('tr');
+                        row.setAttribute('data-user', `${comment.user.name} ${comment.user.lastname}`);
+                        row.setAttribute('data-content', comment.content);
+                        row.setAttribute('data-date', comment.createdAt);
+
+                        row.innerHTML = `
+                <td class="py-3 px-5 font-semibold text-gray-700 border border-gray-300">${comment.user.name} ${comment.user.lastname}</td>
+                <td class="py-3 px-5 text-gray-600 border border-gray-300">${comment.createdAt}</td>
+                <td class="py-3 px-5 text-gray-600 border border-gray-300">${comment.content}</td>
+                <td class="py-3 px-5 text-center">
+                    <button onclick="window.location.href='/comment-back-delete/${comment.id}'" class="btn btn-delete">
+                        Delete Comment
+                    </button>
+                </td>
+            `;
+
+                        tbody.appendChild(row);
+                    });
+
+                    // Update pagination
+                    const paginationContainer = document.querySelector('.pagination-container');
+                    if (paginationContainer) {
+                        paginationContainer.innerHTML = data.pagination;
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // Attach the function to the search bar and filter menu
+        document.getElementById('search-bar').addEventListener('input', filterCommentsTableBackoffice);
+        document.getElementById('sort-by').addEventListener('change', filterCommentsTableBackoffice);
+    </script>
+{% endblock %}
